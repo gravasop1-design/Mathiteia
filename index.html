@@ -205,7 +205,7 @@ table.mt tfoot th{background:var(--warm)}
       <p class="hint">Τα δεδομένα αποθηκεύονται αυτόματα σε αυτόν τον browser.</p>
       <div class="tbl">
         <table>
-          <thead><tr><th>Α/Α</th><th><button class="sorth" data-sort="name" type="button" title="Ταξινόμηση κατά όνομα">Όνομα <span class="arr"></span></button></th><th><button class="sorth" data-sort="start" type="button" title="Ταξινόμηση κατά έναρξη">Έναρξη <span class="arr"></span></button></th><th>Απουσίες</th><th><button class="sorth" data-sort="end" type="button" title="Ταξινόμηση κατά λήξη">Λήξη <span class="arr"></span></button></th><th class="c-view">Προβολή</th><th class="c-xc">Ανενεργό</th></tr></thead>
+          <thead><tr><th>Α/Α</th><th><button class="sorth" data-sort="name" type="button" title="Ταξινόμηση κατά Ονοματεπώνυμο">Ονοματεπώνυμο <span class="arr"></span></button></th><th><button class="sorth" data-sort="start" type="button" title="Ταξινόμηση κατά έναρξη">Έναρξη <span class="arr"></span></button></th><th>Απουσίες</th><th><button class="sorth" data-sort="end" type="button" title="Ταξινόμηση κατά λήξη">Λήξη <span class="arr"></span></button></th><th class="c-view">Προβολή</th><th class="c-xc">Ανενεργό</th></tr></thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
@@ -268,7 +268,7 @@ table.mt tfoot th{background:var(--warm)}
       </div>
     </div>
 
-    <div class="panel"style="max-width:1100px">
+    <div class="panel"style="max-width:900px">
       <h2>Δικές σου αργίες</h2>
       <p class="hint">Πρόσθεσε ημερομηνίες που δεν υπάρχουν παραπάνω, όπως τοπική εορτή, άδεια ή κλείσιμο της επιχείρησης.</p>
       <div class="add">
@@ -294,7 +294,7 @@ table.mt tfoot th{background:var(--warm)}
       <ul style="padding-left:20px; margin:12px 0 0; line-height:1.5; font-size:15px;">
         <li>Κάθε άτομο έχει τη δική του ημερομηνία έναρξης, σε μορφή <strong>ηη/μμ/εεεε</strong>, πληκτρολογώντας την ή επιλέγοντάς την από το ημερολόγιο.</li>
         <li>Τις Απουσίες (<strong>0–5</strong>) τις προσθέτει το πρόγραμμα στις 156 εργάσιμες και η λήξη μετακινείται αντίστοιχα.</li>
-        <li>Ταξινόμησε την λίστα με κριτήρια τις στήλες (<strong>Όνομα, Έναρξη, Λήξη</strong>) κάνοντας κλικ πάνω στους τίτλους των στηλών.</li>
+        <li>Ταξινόμησε την λίστα με κριτήρια τις στήλες (<strong>Ονοματεπώνυμο, Έναρξη, Λήξη</strong>) κάνοντας κλικ πάνω στους τίτλους των στηλών.</li>
         <li>Άνοιξε και δες το Ημερολόγιο κάθε Μαθητευόμενου πατώντας το πλήκτρο <strong>(Ημερολόγιο)</strong>.</li>
         <li>Δες τις Ημέρες ανα Μήνα κάθε Μαθητευόμενου πατώντας το πλήκτρο <strong>(Ημέρες/Μήνα)</strong> και πάτα σε έναν απο τους αριθμούς της στήλης «Εργάσιμες» για να δεις τον μήνα στο ημερολόγιο.</li>
         <li>Τα δεδομένα αποθηκεύονται αυτόματα σε αυτόν τον browser.</li>
@@ -565,9 +565,9 @@ table.mt tfoot th{background:var(--warm)}
       var tr=document.createElement("tr");
       var a=document.createElement("td"); a.textContent=i+1; tr.appendChild(a);
 
-      // όνομα
+      // Ονοματεπώνυμο
       var tn=document.createElement("td"), ni=document.createElement("input");
-      ni.type="text"; ni.className="c-name"; ni.value=r.name||""; ni.setAttribute("aria-label","Όνομα "+(i+1));
+      ni.type="text"; ni.className="c-name"; ni.value=r.name||""; ni.setAttribute("aria-label","Ονοματεπώνυμο "+(i+1));
       ni.addEventListener("input",function(){r.name=ni.value; save();});
       tn.appendChild(ni); tr.appendChild(tn);
 
@@ -657,7 +657,7 @@ table.mt tfoot th{background:var(--warm)}
       return cmp!==0?cmp*dir:a.i-b.i;
     });
     state.team=keyed.map(function(x){return x.r;}); save(); renderTeam(); updateSortUI();
-    if(announce) tmsg.textContent="Ο πίνακας ταξινομήθηκε κατά "+({name:"όνομα",start:"ημερομηνία έναρξης",end:"ημερομηνία λήξης"}[by])+". Όσα άτομα δεν έχουν την τιμή πάνω στον οποίο γίνεται η ταξινόμηση μένουν στο τέλος.";
+    if(announce) tmsg.textContent="Ο πίνακας ταξινομήθηκε κατά "+({name:"Ονοματεπώνυμο",start:"ημερομηνία έναρξης",end:"ημερομηνία λήξης"}[by])+". Όσα άτομα δεν έχουν την τιμή πάνω στον οποίο γίνεται η ταξινόμηση μένουν στο τέλος.";
   }
   function updateSortUI(){
     [].slice.call(document.querySelectorAll(".sorth")).forEach(function(b){
@@ -743,7 +743,7 @@ table.mt tfoot th{background:var(--warm)}
   }
   document.getElementById("tcsvb").addEventListener("click",function(){
     var c=ctx();
-    var rows=[["Α/Α","Όνομα","Έναρξη","Απουσίες","Η "+c.n+"η εργάσιμη"].map(q).join(";")];
+    var rows=[["Α/Α","Ονοματεπώνυμο","Έναρξη","Απουσίες","Η "+c.n+"η εργάσιμη"].map(q).join(";")];
     state.team.forEach(function(r,i){
       if(!r.name && !r.start) return;
       var s=parseISO(r.start), e=(s!==null && c.ok)?endFor(s,c.n+absOf(r),c.work,c.cm):null;
@@ -762,7 +762,7 @@ table.mt tfoot th{background:var(--warm)}
       if(a!==null) got.push({name:c[1],start:iso(a),abs:c.length>=6?ab(c[4]):ab(c[3])});
       else { var b=c.length>=2?parseAny(c[1]):null; if(b!==null) got.push({name:c[0],start:iso(b),abs:ab(c[2])}); }
     });
-    if(!got.length){tmsg.textContent="Δεν βρέθηκαν έγκυρες γραμμές. Κάθε γραμμή χρειάζεται όνομα και ημερομηνία έναρξης στη μορφή ηη/μμ/εεεε."; return;}
+    if(!got.length){tmsg.textContent="Δεν βρέθηκαν έγκυρες γραμμές. Κάθε γραμμή χρειάζεται Ονοματεπώνυμο και ημερομηνία έναρξης στη μορφή ηη/μμ/εεεε."; return;}
     state.team=got; save(); sortTeam(false);
     tmsg.textContent="Φορτώθηκαν "+got.length+" άτομα.";
   });
@@ -931,7 +931,7 @@ table.mt tfoot th{background:var(--warm)}
     var cm = customMap();
 
     // Φύλλο 1: Τμήμα
-    var sheet1Data = [["Όνομα", "Έναρξη", "Απουσίες", "Ημερομηνία Λήξης", "Ημέρα Λήξης"]];
+    var sheet1Data = [["Ονοματεπώνυμο", "Έναρξη", "Απουσίες", "Ημερομηνία Λήξης", "Ημέρα Λήξης"]];
     state.team.forEach(function(r) {
       if (!r.name && !r.start) return;
       var s = parseISO(r.start);
