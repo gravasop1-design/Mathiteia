@@ -42,7 +42,7 @@ h2{font-size:1.1rem; margin:0 0 4px}
 .tab{font:inherit; font-weight:600; background:none; color:var(--muted); border:0; padding:10px 16px; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-1px}
 .tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--accent)}
 .panel{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px}
-#p-set{max-width:1100px}
+#p-set{max-width:900px}
 label.field,.legend{display:block; font-weight:600; margin-bottom:6px}
 input[type=number],input[type=text],select{width:100%; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px 12px}
 input[aria-invalid="true"]{border-color:var(--err)}
@@ -154,7 +154,7 @@ button.sec:hover:not(:disabled){filter:brightness(1.1)}
 .dh h2{color:var(--accent)}
 table.mt thead th{background:var(--soft); color:var(--ink)}
 table.mt tfoot th{background:var(--warm)}
-#cdlg{max-width:1100px; max-height:92vh; overflow:auto; padding:0}
+#cdlg{max-width:900px; max-height:92vh; overflow:auto; padding:0}
 .chead{position:sticky; top:0; z-index:5; background:var(--surface); padding:20px 20px 12px; border-bottom:2px solid var(--c2)}
 .cbody{padding:0 20px 20px}
 .cellbtn{font:inherit; font-weight:700; color:var(--accent); background:var(--soft); border:1px solid var(--accent); border-radius:6px; padding:2px 12px; cursor:pointer; min-width:40px}
@@ -240,14 +240,14 @@ table.mt tfoot th{background:var(--warm)}
 
   <!-- Ρυθμίσεις -->
   <section id="p-set" role="tabpanel" aria-labelledby="tab-set" hidden>
-    <div class="panel"style="max-width:1100px>
+    <div class="panel"style="max-width:900px>
       <div class="legend" id="dlabel">Εργάσιμες ημέρες εβδομάδας</div>
       <div class="days" role="group" aria-labelledby="dlabel" id="days"></div>
       <p class="hint" style="margin:0">Επίλεξε ακριβώς 4 εργάσιμες ανά εβδομάδα. Η Κυριακή είναι πάντα αργία. Η ημέρα έναρξης μετράει ως 1η αν είναι εργάσιμη.</p>
       <p class="stat" id="dstat" style="margin:10px 0 0" aria-live="polite"></p>
     </div>
 
-    <div class="panel"style="max-width:1100px>
+    <div class="panel"style="max-width:900px>
       <h2>Σχολικό έτος</h2>
       <p class="hint">Γράψε το σχολικό έτος, π.χ. 2026-27. Από αυτό υπολογίζονται οι αργίες, το ημερολόγιο, ο έλεγχος των ημερομηνιών έναρξης και η συμπλήρωση των 156 εργάσιμων.</p>
       <div class="sybox">
@@ -257,7 +257,7 @@ table.mt tfoot th{background:var(--warm)}
       <p class="hint" id="sypv" style="margin:10px 0 0"></p>
     </div>
 
-    <div class="panel"style="max-width:1100px>
+    <div class="panel"style="max-width:900px>
       <h2>Επίσημες αργίες</h2>
       <p class="hint">Οι πρώτες είναι σταθερές και οι υπόλοιπες κινητές, με βάση το Ορθόδοξο Πάσχα. Ό,τι είναι τσεκαρισμένο εξαιρείται από τις εργάσιμες. Οι ημερομηνίες είναι για το σχολικό έτος που έχεις ορίσει.</p>
       <div id="official"></div>
@@ -268,7 +268,7 @@ table.mt tfoot th{background:var(--warm)}
       </div>
     </div>
 
-    <div class="panel"style="max-width:1100px>
+    <div class="panel"style="max-width:900px>
       <h2>Δικές σου αργίες</h2>
       <p class="hint">Πρόσθεσε ημερομηνίες που δεν υπάρχουν παραπάνω, όπως τοπική εορτή, άδεια ή κλείσιμο της επιχείρησης.</p>
       <div class="add">
