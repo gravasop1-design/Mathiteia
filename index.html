@@ -42,7 +42,7 @@ h2{font-size:1.1rem; margin:0 0 4px}
 .tab{font:inherit; font-weight:600; background:none; color:var(--muted); border:0; padding:10px 16px; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-1px}
 .tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--accent)}
 .panel{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px}
-#p-set{max-width:680px}
+#p-set{max-width:1100px}
 label.field,.legend{display:block; font-weight:600; margin-bottom:6px}
 input[type=number],input[type=text],select{width:100%; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px 12px}
 input[aria-invalid="true"]{border-color:var(--err)}
@@ -51,7 +51,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,textarea:focus-vis
 .fillrow>div{flex:0 1 220px}
 .days{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px}
 .day{position:relative}
-.day input{position:absolute; opacity:0; inset:0; width:100%; height:100%; margin:0; cursor:pointer}
+.day input{position:absolute; opacity:0; inset:0; 100%; height:100%; margin:0; cursor:pointer}
 .day span{display:block; padding:8px 14px; border-radius:999px; background:var(--chip); border:1px solid var(--line); font-weight:600; user-select:none}
 .day input:checked+span{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
 .day input:disabled,.day input:disabled+span{cursor:not-allowed}
@@ -65,7 +65,7 @@ button.sec:disabled{opacity:.45; cursor:not-allowed}
 button.link{font:inherit; background:none; border:0; color:var(--err); cursor:pointer; padding:4px 8px; font-weight:600}
 .tools{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
 .tbl{overflow-x:auto; margin-top:6px}
-.tbl table{width:100%; border-collapse:collapse; min-width:900px}
+.tbl table{100%; border-collapse:collapse; min-width:900px}
 .tbl th{text-align:left; font-size:.88rem; color:var(--muted); padding:6px 8px; white-space:nowrap}
 .tbl td{padding:4px 5px; border-top:1px solid var(--line); vertical-align:middle}
 .tbl td:first-child{color:var(--muted); width:44px; text-align:right; padding-right:10px}
@@ -314,7 +314,7 @@ table.mt tfoot th{background:var(--warm)}
         <li>Ο κώδικας της Εφαρμογής είναι γραμμένος σε HTML</li>
       </ul>
       <!-- Εμφάνιση φωτογραφίας -->
-      <img src="fatsa.jpg" alt="Περιγραφή" style="width: 100px; max-width: 100%; height: auto; border-radius: 8px; margin-top: 15px;">
+      <img src="fatsa.jpg" alt="Περιγραφή" style="width: 100px"; max-width: 100%; height: auto; border-radius: 8px; margin-top: 15px;">
   </div>
     </div>
   </section>
