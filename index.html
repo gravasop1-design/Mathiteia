@@ -172,6 +172,40 @@ table.mt tfoot th{background:var(--warm)}
 .stat:not(.bad){color:var(--accent)}
 [hidden]{display:none!important}
 @media (max-width:800px){.add{grid-template-columns:1fr}}
+
+/* ---- Στυλ Νέας Καρτέλας: Πρόγραμμα Μαθημάτων ---- */
+.subtabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap}
+.subtab-btn{font:inherit; font-weight:600; font-size:.95rem; padding:7px 14px; border-radius:8px; border:1px solid var(--line); background:var(--chip); color:var(--ink); cursor:pointer}
+.subtab-btn.active{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+.subtab-pane{display:none}
+.subtab-pane.active{display:block}
+.lp-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:14px 0}
+.lp-row input[type=date]{width:auto; min-width:170px; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:9px 12px}
+.lp-day-badge{background:var(--soft); color:var(--accent); padding:9px 16px; border-radius:8px; font-weight:700; border:1px solid var(--line); min-width:130px; text-align:center}
+.lp-summary{margin:12px 0; padding:10px 14px; background:var(--soft); border:1px solid var(--line); border-radius:8px; font-weight:600; display:flex; gap:24px; flex-wrap:wrap}
+table.lptbl{width:100%; border-collapse:collapse; margin-top:12px; font-size:.95rem}
+table.lptbl th{background:var(--hd); color:var(--hdink); text-align:left; padding:10px 12px}
+table.lptbl td{padding:9px 12px; border-bottom:1px solid var(--line)}
+table.lptbl th.center, table.lptbl td.center{text-align:center}
+table.lptbl tr.lesson-row:nth-child(even){background:var(--zebra)}
+table.lptbl tr.holiday-row{background:color-mix(in srgb,var(--err) 10%,var(--surface)); color:var(--muted)}
+table.lptbl tr.final-lesson-row{background:var(--warm) !important; font-weight:700; border-top:2px solid var(--c2); border-bottom:2px solid var(--c2)}
+table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); font-weight:700; padding:8px 12px; border-top:2px solid var(--accent); border-bottom:1px solid var(--line)}
+.month-summary{float:right; font-size:.82rem; font-weight:700; background:var(--surface); color:var(--accent); padding:2px 10px; border-radius:999px; border:1px solid var(--line)}
+.lp-badge{padding:3px 10px; border-radius:999px; font-size:.82rem; font-weight:700; display:inline-block}
+.lp-badge-ok{background:var(--soft); color:var(--accent); border:1px solid var(--line)}
+.lp-badge-end{background:var(--warm); color:#856404; border:1px solid var(--c2)}
+.lp-badge-off{background:color-mix(in srgb,var(--err) 18%,var(--surface)); color:var(--err)}
+.lp-reason-off{font-size:.85rem; color:var(--err); font-style:italic}
+.lp-reason-end{font-size:.85rem; color:#9a6700; font-weight:700}
+.lp-reason-ok{font-size:.85rem; color:var(--muted); font-style:italic}
+.lp-custom-box{background:var(--bg); padding:14px; border-radius:10px; border:1px solid var(--line); margin-bottom:16px}
+.lp-custom-grid{display:grid; grid-template-columns:160px 160px 1fr auto; gap:10px; align-items:end}
+@media(max-width:720px){.lp-custom-grid{grid-template-columns:1fr}}
+
+
+
+  
 </style>
 <script src="https://sheetjs.com"></script>
 </head>
@@ -192,6 +226,7 @@ table.mt tfoot th{background:var(--warm)}
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-team" aria-selected="true" aria-controls="p-team">Τμήμα</button>
+    <button class="tab" role="tab" id="tab-lessons" aria-selected="false" aria-controls="p-lessons">Πρόγραμμα Μαθημάτων</button>
     <button class="tab" role="tab" id="tab-set" aria-selected="false" aria-controls="p-set">Ρυθμίσεις</button>
     <button class="tab" role="tab" id="tab-help" aria-selected="false" aria-controls="p-help">Οδηγίες</button>
     <button class="tab" role="tab" id="tab-peri" aria-selected="false" aria-controls="p-peri">Περί</button>
@@ -218,7 +253,89 @@ table.mt tfoot th{background:var(--warm)}
       <textarea id="tcsv" aria-label="Δεδομένα CSV" placeholder="Εδώ εμφανίζεται το CSV. Για φόρτωση, επικόλλησε εδώ δεδομένα και πάτα «Φόρτωση από κείμενο»."></textarea>
       <p class="hint" id="tmsg" style="margin:10px 0 0" aria-live="polite"></p>
     </div>
+ </section>
+    
+    <!-- ΝΕΑ ΚΑΡΤΕΛΑ: Πρόγραμμα Μαθημάτων -->
+  <section id="p-lessons" role="tabpanel" aria-labelledby="tab-lessons" hidden>
+    <div class="panel">
+      <h2>Προγραμματισμός Εβδομαδιαίων Μαθημάτων (29 Μαθήματα)</h2>
+      <p class="hint">Επίλεξε ημερομηνία έναρξης. Το πρόγραμμα υπολογίζει αυτόματα τις εβδομαδιαίες συναντήσεις έως το τέλος Ιουνίου, εξαιρεί τις αργίες/διακοπές και σταματά στο 29ο μάθημα.</p>
+
+      <div class="subtabs">
+        <button type="button" class="subtab-btn active" data-lp-sub="lp-sub-sched">📅 Πρόγραμμα</button>
+        <button type="button" class="subtab-btn" data-lp-sub="lp-sub-hol">🎉 Αργίες &amp; Διακοπές</button>
+      </div>
+
+      <div id="lp-sub-sched" class="subtab-pane active">
+        <div class="lp-row">
+          <label for="lpStartDate" style="font-weight:700;">Έναρξη Μαθημάτων:</label>
+          <input type="date" id="lpStartDate">
+          <span id="lpDayName" class="lp-day-badge">Επιλέξτε ημερομηνία</span>
+        </div>
+
+        <div id="lpSummaryBar" class="lp-summary" style="display:none;">
+          <span>Σύνολο Μαθημάτων: <strong id="lpTotalLessons">0</strong></span>
+          <span>Ανενεργές / Αργίες: <strong id="lpTotalHolidays">0</strong></span>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table id="lpScheduleTable" class="lptbl" style="display:none;">
+            <thead>
+              <tr>
+                <th class="center">Ενεργή</th>
+                <th>Α/Α</th>
+                <th>Ημερομηνία</th>
+                <th>Ημέρα</th>
+                <th>Κατάσταση</th>
+                <th>Αιτιολογία</th>
+              </tr>
+            </thead>
+            <tbody id="lpTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="lp-sub-hol" class="subtab-pane">
+        <div class="lp-custom-box">
+          <h3 style="margin:0 0 10px; font-size:1rem;">Προσθήκη Προσωπικής Αργίας / Διακοπών</h3>
+          <div class="lp-custom-grid">
+            <div>
+              <label class="field" for="lpCustomStart">Από</label>
+              <input type="date" id="lpCustomStart" style="width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;">
+            </div>
+            <div>
+              <label class="field" for="lpCustomEnd">Έως (προαιρετικό)</label>
+              <input type="date" id="lpCustomEnd" style="width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;">
+            </div>
+            <div>
+              <label class="field" for="lpCustomTitle">Περιγραφή</label>
+              <input type="text" id="lpCustomTitle" placeholder="π.χ. Εκδρομή / Τοπική εορτή">
+            </div>
+            <button type="button" class="sec" id="lpAddCustomBtn">+ Προσθήκη</button>
+          </div>
+          <p class="hint" style="margin:8px 0 0;">* Αν αφήσετε κενό το «Έως», θα προστεθεί μόνο η μία ημέρα.</p>
+        </div>
+
+        <h3 style="font-size:1rem; margin:0 0 8px;">Λίστα Επίσημων Αργιών, Διακοπών &amp; Προσωπικών Αργιών</h3>
+        <p id="lpHolidayHint" class="hint">Επιλέξτε πρώτα «Έναρξη Μαθημάτων» στην υποκαρτέλα Πρόγραμμα.</p>
+        <div style="overflow-x:auto;">
+          <table id="lpHolidaysTable" class="lptbl" style="display:none;">
+            <thead>
+              <tr>
+                <th>Ημερομηνία</th>
+                <th>Ημέρα</th>
+                <th>Περιγραφή Αργίας</th>
+                <th>Τύπος</th>
+                <th class="center">Ενέργεια</th>
+              </tr>
+            </thead>
+            <tbody id="lpHolidaysTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </section>
+ 
 
   <!-- Ημερολόγιο (παράθυρο) -->
   <dialog id="cdlg" aria-labelledby="calttl">
@@ -1031,6 +1148,321 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+</script>
+
+<script>
+(function(){
+  const lpStartInput = document.getElementById('lpStartDate');
+  const lpDayName = document.getElementById('lpDayName');
+  const lpSchedTable = document.getElementById('lpScheduleTable');
+  const lpTableBody = document.getElementById('lpTableBody');
+  const lpHolTable = document.getElementById('lpHolidaysTable');
+  const lpHolBody = document.getElementById('lpHolidaysTableBody');
+  const lpHolHint = document.getElementById('lpHolidayHint');
+  const lpSummaryBar = document.getElementById('lpSummaryBar');
+
+  const greekDays = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
+  const greekMonths = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
+  const MAX_LESSONS = 29;
+  const LP_STORAGE_KEY = 'mathiteia-lessons-v1';
+
+  let lpCustomHolidays = [];
+  let lpManualChecks = {};
+  let lpHolidayMap = new Map();
+
+  // Φόρτωση αποθηκευμένων δεδομένων
+  try {
+    const saved = JSON.parse(localStorage.getItem(LP_STORAGE_KEY) || 'null');
+    if (saved) {
+      if (saved.startDate) lpStartInput.value = saved.startDate;
+      if (Array.isArray(saved.customHolidays)) lpCustomHolidays = saved.customHolidays;
+      if (saved.manualChecks && typeof saved.manualChecks === 'object') lpManualChecks = saved.manualChecks;
+    }
+  } catch(e) {}
+
+  function saveLpState() {
+    try {
+      localStorage.setItem(LP_STORAGE_KEY, JSON.stringify({
+        startDate: lpStartInput.value,
+        customHolidays: lpCustomHolidays,
+        manualChecks: lpManualChecks
+      }));
+    } catch(e) {}
+  }
+
+  document.querySelectorAll('.subtab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.subtab-pane').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.lpSub).classList.add('active');
+    });
+  });
+
+  function toISO(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+  function fmtGR(isoStr) {
+    const [y, m, d] = isoStr.split('-');
+    return `${d}/${m}/${y}`;
+  }
+  function getEaster(year) {
+    const a = year % 4, b = year % 7, c = year % 19;
+    const d = (19 * c + 15) % 30;
+    const e = (2 * a + 4 * b - d + 34) % 7;
+    const month = Math.floor((d + e + 114) / 31);
+    const day = ((d + e + 114) % 31) + 1;
+    return new Date(year, month - 1, day + 13);
+  }
+  function getOfficialHolidays(year) {
+    const list = [
+      { date: `${year}-01-30`, title: 'Τριών Ιεραρχών (Εκπαιδευτική)' },
+      { date: `${year}-03-25`, title: 'Ευαγγελισμός / Εθνική Επέτειος' },
+      { date: `${year}-05-01`, title: 'Εργατική Πρωτομαγιά' },
+      { date: `${year}-08-15`, title: 'Κοίμηση της Θεοτόκου' },
+      { date: `${year}-10-28`, title: 'Επέτειος του «Όχι»' },
+      { date: `${year}-11-17`, title: 'Επέτειος Πολυτεχνείου (Εκπαιδευτική)' }
+    ];
+    for (let d = 1; d <= 7; d++) {
+      const iso = `${year}-01-${String(d).padStart(2, '0')}`;
+      let title = 'Διακοπές Χριστουγέννων';
+      if (d === 1) title = 'Πρωτοχρονιά (Διακοπές Χριστουγέννων)';
+      if (d === 6) title = 'Θεοφάνεια (Διακοπές Χριστουγέννων)';
+      list.push({ date: iso, title });
+    }
+    for (let d = 24; d <= 31; d++) {
+      const iso = `${year}-12-${String(d).padStart(2, '0')}`;
+      let title = 'Διακοπές Χριστουγέννων';
+      if (d === 25) title = 'Χριστούγεννα (Διακοπές Χριστουγέννων)';
+      if (d === 26) title = 'Σύναξη Θεοτόκου (Διακοπές Χριστουγέννων)';
+      list.push({ date: iso, title });
+    }
+    const easter = getEaster(year);
+    const addDays = (base, days) => { const dt = new Date(base); dt.setDate(dt.getDate() + days); return toISO(dt); };
+    list.push({ date: addDays(easter, -48), title: 'Καθαρά Δευτέρα' });
+    list.push({ date: addDays(easter, 50), title: 'Αγίου Πνεύματος' });
+    const eLabels = {
+      '-6': 'Μεγάλη Δευτέρα (Διακοπές Πάσχα)', '-5': 'Μεγάλη Τρίτη (Διακοπές Πάσχα)',
+      '-4': 'Μεγάλη Τετάρτη (Διακοπές Πάσχα)', '-3': 'Μεγάλη Πέμπτη (Διακοπές Πάσχα)',
+      '-2': 'Μεγάλη Παρασκευή (Διακοπές Πάσχα)', '-1': 'Μεγάλο Σάββατο (Διακοπές Πάσχα)',
+      '0': 'Κυριακή του Πάσχα (Διακοπές Πάσχα)', '1': 'Δευτέρα του Πάσχα (Διακοπές Πάσχα)'
+    };
+    for (let offset = -6; offset <= 5; offset++) {
+      list.push({ date: addDays(easter, offset), title: eLabels[String(offset)] || 'Διακοπές Πάσχα' });
+    }
+    return list;
+  }
+  document.getElementById('lpAddCustomBtn').addEventListener('click', () => {
+    const startVal = document.getElementById('lpCustomStart').value;
+    const endVal = document.getElementById('lpCustomEnd').value || startVal;
+    const titleVal = document.getElementById('lpCustomTitle').value.trim() || 'Προσωπική Αργία';
+    if (!startVal) { alert('Επιλέξτε ημερομηνία έναρξης αργίας.'); return; }
+    const [sy, sm, sd] = startVal.split('-').map(Number);
+    const [ey, em, ed] = endVal.split('-').map(Number);
+    let curr = new Date(sy, sm - 1, sd);
+    const end = new Date(ey, em - 1, ed);
+    if (end < curr) { alert('Η ημερομηνία «Έως» δεν μπορεί να είναι πριν από το «Από».'); return; }
+    while (curr <= end) {
+      const iso = toISO(curr);
+      const idx = lpCustomHolidays.findIndex(h => h.date === iso);
+      if (idx !== -1) lpCustomHolidays[idx].title = titleVal;
+      else lpCustomHolidays.push({ date: iso, title: titleVal });
+      delete lpManualChecks[iso];
+      curr.setDate(curr.getDate() + 1);
+    }
+    document.getElementById('lpCustomStart').value = '';
+    document.getElementById('lpCustomEnd').value = '';
+    document.getElementById('lpCustomTitle').value = '';
+    saveLpState();
+    generateLessons();
+  });
+
+  window.lpRemoveCustomHoliday = function(isoDate) {
+    lpCustomHolidays = lpCustomHolidays.filter(h => h.date !== isoDate);
+    delete lpManualChecks[isoDate];
+    saveLpState();
+    generateLessons();
+  };
+
+  function updateLessonStatuses() {
+    const rows = lpTableBody.querySelectorAll('tr.lesson-row');
+    let lessonCounter = 1, holidayCounter = 0;
+    const monthCounts = {};
+
+    rows.forEach(row => {
+      const chk = row.querySelector('.active-checkbox');
+      const numCell = row.querySelector('.lesson-number');
+      const stCell = row.querySelector('.status-cell');
+      const rsnCell = row.querySelector('.reason-cell');
+      const isoDate = row.dataset.isoDate;
+      const mKey = row.dataset.monthKey;
+      if (!monthCounts[mKey]) monthCounts[mKey] = 0;
+
+      const savedReason = row.dataset.holidayReason || lpHolidayMap.get(isoDate) || '';
+      if (savedReason) row.dataset.holidayReason = savedReason;
+
+      row.classList.remove('holiday-row', 'final-lesson-row');
+
+      if (lessonCounter > MAX_LESSONS) {
+        chk.checked = false; chk.disabled = true;
+        row.classList.add('holiday-row');
+        numCell.textContent = '-';
+        stCell.innerHTML = '<span class="lp-badge lp-badge-off">Ανενεργή</span>';
+        rsnCell.innerHTML = `<span class="lp-reason-off">Πέραν των 29 μαθημάτων${savedReason ? ' (' + savedReason + ')' : ''}</span>`;
+        holidayCounter++;
+        return;
+      }
+
+      chk.disabled = false;
+
+      if (chk.checked) {
+        if (lessonCounter === MAX_LESSONS) {
+          row.classList.add('final-lesson-row');
+          numCell.textContent = `${lessonCounter}ο Μάθημα`;
+          stCell.innerHTML = '<span class="lp-badge lp-badge-end">Μάθημα</span>';
+          rsnCell.innerHTML = `<span class="lp-reason-end">🏁 Λήξη Μαθημάτων - Αξιολόγηση${savedReason ? ' (' + savedReason + ')' : ''}</span>`;
+        } else {
+          numCell.textContent = `${lessonCounter}ο Μάθημα`;
+          stCell.innerHTML = '<span class="lp-badge lp-badge-ok">Μάθημα</span>';
+          rsnCell.innerHTML = savedReason ? `<span class="lp-reason-ok">${savedReason}</span>` : '';
+        }
+        lessonCounter++;
+        monthCounts[mKey]++;
+      } else {
+        row.classList.add('holiday-row');
+        numCell.textContent = '-';
+        stCell.innerHTML = '<span class="lp-badge lp-badge-off">Αργία</span>';
+        rsnCell.innerHTML = `<span class="lp-reason-off">${savedReason || 'Χειροκίνητη απενεργοποίηση'}</span>`;
+        holidayCounter++;
+      }
+    });
+
+    Object.keys(monthCounts).forEach(mKey => {
+      const badge = document.getElementById(`lp-month-count-${mKey}`);
+      if (badge) {
+        const cnt = monthCounts[mKey];
+        badge.textContent = cnt === 1 ? '1 μάθημα' : `${cnt} μαθήματα`;
+      }
+    });
+
+    document.getElementById('lpTotalLessons').textContent = lessonCounter - 1;
+    document.getElementById('lpTotalHolidays').textContent = holidayCounter;
+  }
+
+  function generateLessons() {
+    const val = lpStartInput.value;
+    saveLpState();
+    if (!val) {
+      lpDayName.textContent = 'Επιλέξτε ημερομηνία';
+      lpSchedTable.style.display = 'none';
+      lpSummaryBar.style.display = 'none';
+      lpHolTable.style.display = 'none';
+      lpHolHint.style.display = 'block';
+      return;
+    }
+
+    const [year, month, day] = val.split('-').map(Number);
+    const startDate = new Date(year, month - 1, day);
+    const endYear = (month > 6) ? year + 1 : year;
+    const endDate = new Date(endYear, 5, 30);
+    const dayName = greekDays[startDate.getDay()];
+    lpDayName.textContent = dayName;
+
+    let official = getOfficialHolidays(year);
+    if (endYear !== year) official = official.concat(getOfficialHolidays(endYear));
+
+    const startISO = toISO(startDate), endISO = toISO(endDate);
+    lpHolidayMap.clear();
+    const displayList = [];
+
+    official.forEach(h => {
+      if (h.date >= startISO && h.date <= endISO) {
+        lpHolidayMap.set(h.date, h.title);
+        displayList.push({ ...h, type: 'Επίσημη / Διακοπές' });
+      }
+    });
+    lpCustomHolidays.forEach(h => {
+      if (h.date >= startISO && h.date <= endISO) {
+        lpHolidayMap.set(h.date, h.title);
+        displayList.push({ ...h, type: 'Προσωπική' });
+      }
+    });
+    displayList.sort((a, b) => a.date.localeCompare(b.date));
+
+    lpHolBody.innerHTML = '';
+    displayList.forEach(h => {
+      const [hy, hm, hd] = h.date.split('-').map(Number);
+      const hDay = greekDays[new Date(hy, hm - 1, hd).getDay()];
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${fmtGR(h.date)}</td>
+        <td>${hDay}</td>
+        <td><strong>${h.title}</strong></td>
+        <td>${h.type}</td>
+        <td class="center">${h.type === 'Προσωπική' ? `<button type="button" class="link" onclick="lpRemoveCustomHoliday('${h.date}')">Διαγραφή</button>` : '<span class="hint" style="margin:0;">Αυτόματη</span>'}</td>
+      `;
+      lpHolBody.appendChild(tr);
+    });
+    lpHolHint.style.display = 'none';
+    lpHolTable.style.display = 'table';
+
+    lpTableBody.innerHTML = '';
+    let curr = new Date(startDate);
+    let lastMonthKey = '';
+
+    while (curr <= endDate) {
+      const iso = toISO(curr);
+      const cMonth = curr.getMonth();
+      const cYear = curr.getFullYear();
+      const mKey = `${cYear}-${cMonth}`;
+
+      if (mKey !== lastMonthKey) {
+        const mRow = document.createElement('tr');
+        mRow.className = 'month-header-row';
+        mRow.innerHTML = `<td colspan="6">🗓️ ${greekMonths[cMonth]} ${cYear}<span class="month-summary" id="lp-month-count-${mKey}">0 μαθήματα</span></td>`;
+        lpTableBody.appendChild(mRow);
+        lastMonthKey = mKey;
+      }
+
+      const isHol = lpHolidayMap.has(iso);
+      const isChecked = (iso in lpManualChecks) ? lpManualChecks[iso] : !isHol;
+      const row = document.createElement('tr');
+      row.className = 'lesson-row';
+      row.dataset.isoDate = iso;
+      row.dataset.monthKey = mKey;
+      if (isHol) row.dataset.holidayReason = lpHolidayMap.get(iso);
+
+      row.innerHTML = `
+        <td class="center"><input type="checkbox" class="active-checkbox" style="width:18px;height:18px;cursor:pointer;" ${isChecked ? 'checked' : ''}></td>
+        <td class="lesson-number"></td>
+        <td>${fmtGR(iso)}</td>
+        <td>${dayName}</td>
+        <td class="status-cell"></td>
+        <td class="reason-cell"></td>
+      `;
+      const chkBox = row.querySelector('.active-checkbox');
+      chkBox.addEventListener('change', () => {
+        lpManualChecks[iso] = chkBox.checked;
+        saveLpState();
+        updateLessonStatuses();
+      });
+      lpTableBody.appendChild(row);
+      curr.setDate(curr.getDate() + 7);
+    }
+
+    updateLessonStatuses();
+    lpSchedTable.style.display = 'table';
+    lpSummaryBar.style.display = 'flex';
+  }
+
+  lpStartInput.addEventListener('change', () => {
+    lpManualChecks = {};
+    generateLessons();
+  });
+
+  // Αρχική φόρτωση αν υπάρχει αποθηκευμένη ημερομηνία
+  if (lpStartInput.value) generateLessons();
+})();
 </script>
 </body>
 </html>
