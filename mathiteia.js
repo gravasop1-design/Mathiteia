@@ -586,6 +586,9 @@
     var r=state.team[i];
     document.getElementById("calttl").textContent="Ημερολόγιο – "+(r.name||"Άτομο "+(i+1));
     if(cdlg.showModal) cdlg.showModal(); else cdlg.setAttribute("open","");
+  
+
+
     if(focusEl){ try{focusEl.scrollIntoView({block:"center"});}catch(e){} }
   }
   function prepCalendar(){
@@ -729,24 +732,57 @@
 
   updateSYText(); renderOfficial(); renderCustom(); syncDays(); sortTeam(false);
 
-  document.getElementById("texcel").addEventListener("click", function() {
+    document.getElementById("texcel").addEventListener("click", function() {
     function escXml(v) { return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
-    function buildRows(rows) {
+    function buildRows(rows, rowStyles) {
       return rows.map(function(row, rIdx) {
+        var st = (rIdx === 0) ? ' ss:StyleID="hdr"' : (rowStyles && rowStyles[rIdx] ? ' ss:StyleID="' + rowStyles[rIdx] + '"' : "");
         var cells = row.map(function(val) {
           var isNum = (typeof val === "number" && !isNaN(val));
-          return '<Cell' + (rIdx === 0 ? ' ss:StyleID="hdr"' : "") + '><Data ss:Type="' + (isNum ? "Number" : "String") + '">' + escXml(val) + '</Data></Cell>';
+          return '<Cell' + st + '><Data ss:Type="' + (isNum ? "Number" : "String") + '">' + escXml(val) + '</Data></Cell>';
         }).join("");
         return "<Row>" + cells + "</Row>";
       }).join("\n");
     }
+
     var c = ctx();
-    var sheet1Data = [["Ονοματεπώνυμο", "Έναρξη", "Απουσίες", "Ημερομηνία Λήξης", "Ημέρα Λήξης"]];
-    state.team.forEach(function(r) {
-      if (!r.name && !r.start) return;
-      var s = parseISO(r.start), e = (s !== null && c.ok) ? endFor(s, c.n + absOf(r), c.work, c.cm) : null;
-      sheet1Data.push([r.name, s === null ? "" : dmy(s), absOf(r), e ? dmy(e.end) : "", e ? WDF[new Date(e.end).getUTCDay()] : ""]);
+    var sheet1Data = [["Α/Α", "Ονοματεπώνυμο", "Έναρξη", "Απουσίες", "Ημερομηνίες Απουσιών", "Ημερομηνία Λήξης", "Ημέρα Λήξης", "Κατάσταση"]];
+    var sheet1Styles = [null];
+    var sheet3Data = [["Α/Α", "Ονοματεπώνυμο", "Ημερομηνία Απουσίας", "Ημέρα"]];
+    var absRowIdx = 1;
+
+    state.team.forEach(function(r, idx) {
+      if (!r.name && !r.start && !absOf(r) && !r.off) return;
+      var s = parseISO(r.start);
+      var am = absMapFor(r);
+      var e = (s !== null && c.ok) ? endFor(s, c.n + extraCountFor(r), c.work, c.cm, am) : null;
+      var datesArr = getAbsDates(r);
+      var absListStr = datesArr.map(function(d) { var ms = parseISO(d); return ms !== null ? dmy(ms) : ""; }).filter(Boolean).join(", ");
+
+      sheet1Data.push([
+        idx + 1,
+        r.name || "",
+        s === null ? "" : dmy(s),
+        absOf(r),
+        absListStr,
+        e ? dmy(e.end) : "",
+        e ? WDF[new Date(e.end).getUTCDay()] : "",
+        r.off ? "Ανενεργός" : "Ενεργός"
+      ]);
+      sheet1Styles.push(r.off ? "offrow" : null);
+
+      datesArr.forEach(function(d) {
+        var ms = parseISO(d);
+        if (ms !== null) {
+          sheet3Data.push([absRowIdx++, r.name || ("Άτομο " + (idx + 1)), dmy(ms), WDF[new Date(ms).getUTCDay()]]);
+        }
+      });
     });
+
+    if (sheet3Data.length === 1) {
+      sheet3Data.push(["—", "Δεν έχουν καταχωριστεί ημερομηνίες απουσιών", "", ""]);
+    }
+
     var sheet2Data = [["Ημερομηνία", "Ημέρα", "Περιγραφή", "Τύπος"]];
     [state.sy, state.sy + 1].forEach(function(yr) {
       var ym = yearMap(yr);
@@ -759,11 +795,27 @@
       var ms = parseISO(ch.date);
       if (ms !== null) sheet2Data.push([dmy(ms), WDF[new Date(ms).getUTCDay()], ch.name || "Προσωπική αργία", "Προσωπική"]);
     });
-    var xml = '<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n<Styles><Style ss:ID="hdr"><Font ss:Bold="1"/><Interior ss:Color="#E1EBE8" ss:Pattern="Solid"/></Style></Styles>\n<Worksheet ss:Name="Τμήμα"><Table><Column ss:Width="180"/><Column ss:Width="95"/><Column ss:Width="75"/><Column ss:Width="115"/><Column ss:Width="105"/>\n' + buildRows(sheet1Data) + '\n</Table></Worksheet>\n<Worksheet ss:Name="Αργίες"><Table><Column ss:Width="95"/><Column ss:Width="95"/><Column ss:Width="280"/><Column ss:Width="140"/>\n' + buildRows(sheet2Data) + '\n</Table></Worksheet>\n</Workbook>';
+
+    var xml = '<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n' +
+      '<Styles>' +
+        '<Style ss:ID="hdr"><Font ss:Bold="1"/><Interior ss:Color="#E1EBE8" ss:Pattern="Solid"/></Style>' +
+        '<Style ss:ID="offrow"><Font ss:Color="#721C24"/><Interior ss:Color="#F8D7DA" ss:Pattern="Solid"/></Style>' +
+      '</Styles>\n' +
+      '<Worksheet ss:Name="Τμήμα"><Table>' +
+        '<Column ss:Width="45"/><Column ss:Width="180"/><Column ss:Width="90"/><Column ss:Width="70"/><Column ss:Width="240"/><Column ss:Width="115"/><Column ss:Width="105"/><Column ss:Width="90"/>\n' +
+        buildRows(sheet1Data, sheet1Styles) + '\n</Table></Worksheet>\n' +
+      '<Worksheet ss:Name="Απουσίες Αναλυτικά"><Table>' +
+        '<Column ss:Width="45"/><Column ss:Width="190"/><Column ss:Width="130"/><Column ss:Width="110"/>\n' +
+        buildRows(sheet3Data) + '\n</Table></Worksheet>\n' +
+      '<Worksheet ss:Name="Αργίες"><Table>' +
+        '<Column ss:Width="95"/><Column ss:Width="95"/><Column ss:Width="280"/><Column ss:Width="140"/>\n' +
+        buildRows(sheet2Data) + '\n</Table></Worksheet>\n' +
+      '</Workbook>';
+
     var blob = new Blob([xml], { type: "application/vnd.ms-excel;charset=utf-8;" });
     var a = document.createElement("a"), outName = "Mathiteia_" + syLabel().replace("–", "-") + ".xls";
     a.href = URL.createObjectURL(blob); a.download = outName; a.click();
-    tmsg.textContent = "Το αρχείο Excel (" + outName + ") δημιουργήθηκε.";
+    tmsg.textContent = "Το αρχείο Excel (" + outName + ") δημιουργήθηκε με όλες τις απουσίες.";
   });
 })();
 
