@@ -234,11 +234,11 @@
     if(!c.ok) tstat.textContent="Προσοχή: Πρέπει να επιλέξεις ακριβώς 4 εργάσιμες ημέρες στις Ρυθμίσεις για να υπολογιστεί η λήξη.";
     renderTeam();
   }
-  function renderTeam(){
+    function renderTeam(){
     teamInit(); tbody.innerHTML="";
     var c=ctx();
     state.team.forEach(function(r,i){
-            var tr=document.createElement("tr");
+      var tr=document.createElement("tr");
       if(r.off) tr.classList.add("inactive-row");
 
       var td0=document.createElement("td"); td0.textContent=i+1; tr.appendChild(td0);
@@ -258,7 +258,7 @@
       tdDate.appendChild(withPicker(inDate,onDateChange));
       tr.appendChild(tdDate);
 
-            var tdAbs=document.createElement("td"); tdAbs.className="c-abs";
+      var tdAbs=document.createElement("td"); tdAbs.className="c-abs";
       var absWrap=document.createElement("div"); absWrap.className="c-abs-wrap";
       var absCnt=document.createElement("span");
       function syncAbsBadge(){
@@ -304,7 +304,7 @@
     var adlg=document.getElementById("adlg");
     if(!adlg){
       adlg=document.createElement("dialog"); adlg.id="adlg";
-      adlg.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><h3 id="attl" style="margin:0;font-size:17px;"></h3><button type="button" id="aclose" class="sec sm">Κλείσιμο</button></div><p class="hint" style="margin:6px 0 0 0;font-size:13px;">Καταχώρισε έως 5 ημερομηνίες απουσίας. Δεν προσμετρώνται στις 156 εργάσιμες.</p><div id="abody" class="abs-list"></div><div id="awarn" class="abs-warn" hidden></div>';
+      adlg.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;"><h3 id="attl" style="margin:0;font-size:17px;"></h3><button type="button" id="aclose" class="sec sm">Κλείσιμο</button></div><p class="hint" style="margin:6px 0 0 0;font-size:13px;">Καταχώρισε έως 5 ημερομηνίες απουσίας (μόνο σε εργάσιμες ημέρες).</p><div id="abody" class="abs-list"></div><div id="awarn" class="abs-warn" hidden></div>';
       document.body.appendChild(adlg);
       document.getElementById("aclose").addEventListener("click",function(){
         if(adlg.close) adlg.close(); else adlg.removeAttribute("open");
@@ -315,23 +315,48 @@
     body.innerHTML="";
     var vals=r.absDates.slice(0,5);
     while(vals.length<5) vals.push("");
+    var inputs=[];
 
     function persist(){
-      var clean=[], seen={};
-      vals.forEach(function(v){ if(v && !seen[v]){ seen[v]=true; clean.push(v); } });
+      var c=ctx(), cm=customMap(), sMs=parseISO(r.start);
+      var clean=[], seen={}, errors=[];
+
+      vals.forEach(function(isoStr,idx){
+        var inp=inputs[idx];
+        if(!isoStr){
+          if(inp) inp.setAttribute("aria-invalid","false");
+          return;
+        }
+        var ms=parseISO(isoStr);
+        if(ms===null) return;
+        var dw=new Date(ms).getUTCDay();
+        var ym=yearMap(new Date(ms).getUTCFullYear());
+
+        if(!c.work[dw]){
+          if(inp) inp.setAttribute("aria-invalid","true");
+          errors.push("Η "+dmy(ms)+" ("+WDF[dw]+") είναι ημέρα Μαθήματος / μη εργάσιμη και απορρίφθηκε.");
+          return;
+        }
+        if(cm[ms] || ym[ms]){
+          if(inp) inp.setAttribute("aria-invalid","true");
+          errors.push("Η "+dmy(ms)+" είναι αργία ("+(cm[ms]||ym[ms])+") και απορρίφθηκε.");
+          return;
+        }
+        if(sMs!==null && ms<sMs){
+          if(inp) inp.setAttribute("aria-invalid","true");
+          errors.push("Η "+dmy(ms)+" είναι πριν την ημερομηνία έναρξης.");
+          return;
+        }
+
+        if(inp) inp.setAttribute("aria-invalid","false");
+        if(!seen[isoStr]){ seen[isoStr]=true; clean.push(isoStr); }
+      });
+
       clean.sort();
       r.absDates=clean; r.abs=clean.length;
       save();
-      // Έλεγχος για τυχόν αργίες ή μη εργάσιμες
-      var c=ctx(), cm=customMap(), sMs=parseISO(r.start), notes=[];
-      clean.forEach(function(isoStr){
-        var ms=parseISO(isoStr); if(ms===null) return;
-        var dw=new Date(ms).getUTCDay(), ym=yearMap(new Date(ms).getUTCFullYear());
-        if(sMs!==null && ms<sMs) notes.push("Η "+dmy(ms)+" είναι πριν την έναρξη.");
-        else if(!c.work[dw] || cm[ms] || ym[ms]) notes.push("Η "+dmy(ms)+" είναι ήδη αργία/μη εργάσιμη.");
-      });
-      warn.hidden=!notes.length;
-      warn.textContent=notes.join(" ");
+      warn.hidden=!errors.length;
+      warn.textContent=errors.join(" ");
       if(onDone) onDone();
     }
 
@@ -339,6 +364,7 @@
       var row=document.createElement("div"); row.className="abs-row";
       var lbl=document.createElement("label"); lbl.textContent=(idx+1)+"η απουσία:";
       var inp=document.createElement("input");
+      inputs.push(inp);
       var ms0=parseISO(val); inp.value=ms0!==null?dmy(ms0):"";
       function onChg(ms){ vals[idx]=(ms!==null?iso(ms):""); persist(); }
       maskInput(inp,onChg);
@@ -359,13 +385,6 @@
     tdEnd.innerHTML='<div class="rd">'+dmy(e.end)+'</div><div class="rw">'+WDF[new Date(e.end).getUTCDay()]+'</div>';
   }
 
-  function updateRowEnd(tr,r,c){
-    var tdEnd=tr.querySelector(".rs");
-    var s=parseISO(r.start);
-    if(s===null || !c.ok){tdEnd.innerHTML="—"; return;}
-    var e=endFor(s,c.n+absOf(r),c.work,c.cm);
-    tdEnd.innerHTML='<div class="rd">'+dmy(e.end)+'</div><div class="rw">'+WDF[new Date(e.end).getUTCDay()]+'</div>';
-  }
 
 
   function sortTeam(announce){
@@ -471,31 +490,78 @@
     }
     out.push(cur); return out;
   }
-  document.getElementById("tcsvb").addEventListener("click",function(){
+    document.getElementById("tcsvb").addEventListener("click",function(){
     var c=ctx();
-    var rows=[["Α/Α","Ονοματεπώνυμο","Έναρξη","Απουσίες","Η "+c.n+"η εργάσιμη"].map(q).join(";")];
+    var rows=[["Α/Α","Ονοματεπώνυμο","Έναρξη","Απουσίες","Ημερομηνίες Απουσιών","Η "+c.n+"η εργάσιμη","Ανενεργό"].map(q).join(";")];
     state.team.forEach(function(r,i){
-      if(!r.name && !r.start) return;
-      var s=parseISO(r.start), e=(s!==null && c.ok)?endFor(s,c.n+absOf(r),c.work,c.cm):null;
-      rows.push([i+1,r.name,s===null?"":dmy(s),absOf(r),e?dmy(e.end):""].map(q).join(";"));
+      if(!r.name && !r.start && !absOf(r) && !r.off) return;
+      var s=parseISO(r.start), e=(s!==null && c.ok)?endFor(s,c.n+extraCountFor(r),c.work,c.cm,absMapFor(r)):null;
+      var absList=getAbsDates(r).map(function(d){var ms=parseISO(d); return ms!==null?dmy(ms):"";}).filter(Boolean).join(", ");
+      rows.push([
+        i+1,
+        r.name,
+        s===null?"":dmy(s),
+        absOf(r),
+        absList,
+        e?dmy(e.end):"",
+        r.off?"ΝΑΙ":""
+      ].map(q).join(";"));
     });
     tcsv.value=rows.join("\n"); tcsv.select();
-    tmsg.textContent="Το CSV είναι έτοιμο στο πλαίσιο.";
+    tmsg.textContent="Το CSV (με ημερομηνίες απουσιών) είναι έτοιμο στο πλαίσιο.";
     try{ navigator.clipboard.writeText(tcsv.value); }catch(e){}
   });
-    document.getElementById("tload").addEventListener("click",function(){
+
+  document.getElementById("tload").addEventListener("click",function(){
     var got=[];
-        function ab(v){return /^\s*[0-5]\s*$/.test(v||"")?+v:0;}
+    function ab(v){return /^\s*[0-5]\s*$/.test(v||"")?+v:0;}
+    function parseAbsList(str){
+      if(!str) return [];
+      var out=[], seen={};
+      String(str).split(/[,|\s]+/).forEach(function(part){
+        var ms=parseAny(part);
+        if(ms!==null){
+          var isoStr=iso(ms);
+          if(!seen[isoStr] && out.length<5){ seen[isoStr]=true; out.push(isoStr); }
+        }
+      });
+      out.sort();
+      return out;
+    }
+    function isOffFlag(v){
+      var s=String(v||"").trim().toUpperCase();
+      return s==="ΝΑΙ" || s==="NAI" || s==="YES" || s==="1" || s==="TRUE";
+    }
+
     tcsv.value.split(/\r?\n/).forEach(function(l){
       if(!l.trim() || got.length>=TEAM) return;
-      var c=parseLine(l), a=c.length>=4?parseAny(c.at(2)):null;
-      if(a!==null) got.push({name:c.at(1),start:iso(a),abs:c.length>=6?ab(c.at(4)):ab(c.at(3))});
-      else { var b=c.length>=2?parseAny(c.at(1)):null; if(b!==null) got.push({name:c.at(0),start:iso(b),abs:ab(c.at(2))}); }
+      var c=parseLine(l);
+      // Παράλειψη γραμμής επικεφαλίδων
+      if((c.at(0)==="Α/Α" || c.at(1)==="Ονοματεπώνυμο") && parseAny(c.at(2))===null) return;
+
+      var a=c.length>=3?parseAny(c.at(2)):null;
+      if(a!==null){
+        // Νέο CSV (7 στήλες): Α/Α; Ονοματεπώνυμο; Έναρξη; Απουσίες; Ημερομηνίες Απουσιών; Λήξη; Ανενεργό
+        var dates=(c.length>=5)?parseAbsList(c.at(4)):[];
+        var cnt=dates.length ? dates.length : ab(c.at(3));
+        var off=(c.length>=7)?isOffFlag(c.at(6)):false;
+        got.push({name:c.at(1)||"",start:iso(a),abs:cnt,absDates:dates,off:off});
+      } else {
+        // Υποστήριξη παλαιότερης μορφής 3-4 στηλών χωρίς Α/Α
+        var b=c.length>=2?parseAny(c.at(1)):null;
+        if(b!==null){
+          var dates2=(c.length>=4)?parseAbsList(c.at(3)):[];
+          var cnt2=dates2.length ? dates2.length : ab(c.at(2));
+          got.push({name:c.at(0)||"",start:iso(b),abs:cnt2,absDates:dates2,off:false});
+        }
+      }
     });
+
     if(!got.length){tmsg.textContent="Δεν βρέθηκαν έγκυρες γραμμές."; return;}
     state.team=got; save(); sortTeam(false);
-    tmsg.textContent="Φορτώθηκαν "+got.length+" άτομα.";
+    tmsg.textContent="Φορτώθηκαν "+got.length+" άτομα μαζί με τις ημερομηνίες απουσιών.";
   });
+
   var clr=document.getElementById("tclear"), clrT;
 
   clr.addEventListener("click",function(){
