@@ -3,226 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Υπολογισμός     Εργάσιμων Ημερών</title>
-<style>  
-:root{
-  box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
-  padding-bottom:env(safe-area-inset-bottom,0px);
-  --bg:#eef2f1; --surface:#ffffff; --ink:#18302c; --muted:#5a6f6b; --line:#c7d3d0;
-  --accent:#0f5c52; --accent-ink:#ffffff; --chip:#e1ebe8; --err:#a3262a;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --bg:#101a18; --surface:#182623; --ink:#e4efec; --muted:#93aaa5; --line:#2e4540;
-    --accent:#5fc7b4; --accent-ink:#0c1a17; --chip:#22342f; --err:#ff8a8d;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#101a18; --surface:#182623; --ink:#e4efec; --muted:#93aaa5; --line:#2e4540;
-  --accent:#5fc7b4; --accent-ink:#0c1a17; --chip:#22342f; --err:#ff8a8d;
-}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*,*::before,*::after{box-sizing:border-box}
-body{
-  margin:0; background:var(--bg); color:var(--ink);
-  font-family:"Source Sans 3","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
-  font-size:17px; line-height:1.5;
-}
-main{max-width:1100px; margin:0 auto; padding:24px 18px 40px}
-.top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px 24px; flex-wrap:wrap; margin-bottom:6px}
-.credit{margin:4px 0 0 auto; font-size:.85rem; color:var(--muted); text-align:right}
-.credit a{color:inherit}
-h1{font-size:1.65rem; line-height:1.2; margin:0 0 6px; font-weight:700}
-h2{font-size:1.1rem; margin:0 0 4px}
-.lead{margin:0 0 18px; color:var(--muted)}
-.tabs{display:flex; gap:4px; margin-bottom:14px; border-bottom:1px solid var(--line)}
-.tab{font:inherit; font-weight:600; background:none; color:var(--muted); border:0; padding:10px 16px; cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-1px}
-.tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--accent)}
-.panel{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px; margin-bottom:16px}
-#p-set{max-width:1100px}
-label.field,.legend{display:block; font-weight:600; margin-bottom:6px}
-input[type=number],input[type=text],select{width:100%; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px 12px}
-input[aria-invalid="true"]{border-color:var(--err)}
-input:focus-visible,select:focus-visible,button:focus-visible,textarea:focus-visible,.day input:focus-visible+span{outline:3px solid var(--accent); outline-offset:2px}
-.fillrow{display:flex; gap:10px; align-items:end; flex-wrap:wrap}
-.fillrow>div{flex:0 1 220px}
-.days{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:6px}
-.day{position:relative}
-.day input{position:absolute; opacity:0; inset:0; 100%; height:100%; margin:0; cursor:pointer}
-.day span{display:block; padding:8px 14px; border-radius:999px; background:var(--chip); border:1px solid var(--line); font-weight:600; user-select:none}
-.day input:checked+span{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
-.day input:disabled,.day input:disabled+span{cursor:not-allowed}
-.day input:disabled+span{opacity:.4}
-.hint{margin:0 0 14px; font-size:.9rem; color:var(--muted)}
-.stat{margin:0 0 14px; font-weight:600}
-.stat.bad{color:var(--err)}
-button.sec{font:inherit; font-weight:600; padding:9px 16px; border-radius:8px; cursor:pointer; background:var(--chip); color:var(--ink); border:1px solid var(--line)}
-button.sec.sm{padding:5px 10px; font-size:.88rem}
-button.sec:disabled{opacity:.45; cursor:not-allowed}
-button.link{font:inherit; background:none; border:0; color:var(--err); cursor:pointer; padding:4px 8px; font-weight:600}
-.tools{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
-.tbl{overflow-x:auto; margin-top:6px}
-.tbl table{100%; border-collapse:collapse; min-width:900px}
-.tbl th{text-align:left; font-size:.88rem; color:var(--muted); padding:6px 8px; white-space:nowrap}
-.tbl td{padding:3px 5px; border-top:1px solid var(--line); vertical-align:middle}
-.tbl td:first-child{color:var(--muted); width:44px; text-align:right; padding-right:10px}
-.tbl input{padding:7px 10px; font-size:.97rem}
-.tbl .c-name{min-width:230px}
-.tbl .c-date{min-width:130px; width:140px}
-.tbl .c-abs{min-width:80px; width:90px}
-.tbl .rs{padding:4px 12px; min-width:150px; line-height:1.25}
-.rd{font-weight:700; white-space:nowrap}
-.rw{font-size:.85rem; color:var(--c2); font-weight:600}
-.tbl .bc{white-space:nowrap}
-.tbl .bc button{margin-right:6px}
-.dp{position:relative}
-.dp>input{padding-right:38px!important}
-.dp .pk{position:absolute; right:4px; top:50%; transform:translateY(-50%); width:30px; height:30px; display:flex; align-items:center; justify-content:center; color:var(--muted); border-radius:6px; cursor:pointer; overflow:hidden}
-.dp .pk:hover{background:var(--chip)}
-.dp .pk:focus-within{outline:3px solid var(--accent)}
-.dp .pk input{position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; padding:0; border:0; margin:0}
-.dp .pk input::-webkit-calendar-picker-indicator{position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer}
-textarea{width:100%; min-height:110px; margin-top:14px; font:inherit; font-size:.88rem; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px}
-.group-h{font-weight:700; margin:16px 0 6px}
-.hol{display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid var(--line)}
-.hol:first-of-type{border-top:0}
-.hol input{accent-color:var(--accent); width:18px; height:18px; flex:none}
-.hol .nm{flex:1}
-.hol .dt{color:var(--muted); font-size:.92rem; text-align:right}
-.add{display:grid; grid-template-columns:1fr 1.4fr auto; gap:10px; align-items:end; margin-top:10px}
-.sybox{max-width:240px}
-.calbar{display:flex; gap:16px; flex-wrap:wrap; align-items:end}
-.calbar>div{flex:1 1 200px; max-width:340px}
-.months{display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:18px; margin-top:16px}
-.mh{font-weight:700; margin:0 0 6px; text-transform:capitalize}
-.cg{display:grid; grid-template-columns:repeat(7,1fr); gap:2px}
-.cg .wh{font-size:.75rem; color:var(--muted); text-align:center; padding-bottom:2px; font-weight:600}
-.c{aspect-ratio:1; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:.85rem; line-height:1.1; border:2px solid transparent}
-.c .cn{font-size:.58rem; opacity:.75}
-.c.sun,.c.off{color:var(--muted); opacity:.55}
-.c.cnt{background:var(--chip)}
-.c.hol{background:color-mix(in srgb,var(--err) 24%,var(--surface)); opacity:1; color:var(--ink)}
-.c.st{border-color:var(--accent); font-weight:700}
-.c.en{background:var(--accent); color:var(--accent-ink); font-weight:700; opacity:1}
-.legend-row{display:flex; flex-wrap:wrap; gap:14px; font-size:.88rem; color:var(--muted); margin-top:14px}
-.legend-row i{display:inline-block; width:14px; height:14px; border-radius:4px; vertical-align:-2px; margin-right:6px; border:2px solid transparent}
-dialog{background:var(--surface); color:var(--ink); border:1px solid var(--line); border-radius:12px; padding:20px; width:calc(100% - 32px); max-width:1100px}
-dialog::backdrop{background:rgba(0,0,0,.5)}
-.dh{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:8px}
-table.mt{width:100%; border-collapse:collapse; margin-top:10px}
-table.mt th{text-align:left; font-size:.88rem; color:var(--muted); padding:6px 8px; border-bottom:1px solid var(--line)}
-table.mt td,table.mt tfoot th{padding:4px 8px; border-top:1px solid var(--line)}
-table.mt td:nth-child(n+2),table.mt th:nth-child(n+2){text-align:right}
-table.mt td:first-child{text-transform:capitalize}
-table.mt tfoot th{color:var(--ink); font-size:1rem}
-/* ---- χρωματισμός ---- */
-:root{--c2:#e39a2d; --hd:#0f5c52; --hdink:#ffffff; --zebra:#f3f8f6; --soft:#e2f0ec; --warm:#fff1d6; --warmline:#e8c98a}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){--c2:#f0b34f; --hd:#1b4a43; --hdink:#e4efec; --zebra:#1c2c29; --soft:#1f3a35; --warm:#3a2f17; --warmline:#6b5527}
-}
-:root[data-theme="dark"]{--c2:#f0b34f; --hd:#1b4a43; --hdink:#e4efec; --zebra:#1c2c29; --soft:#1f3a35; --warm:#3a2f17; --warmline:#6b5527}
-body{background:linear-gradient(180deg,var(--soft) 0,var(--bg) 320px) no-repeat, var(--bg)}
-.top{background:linear-gradient(120deg,var(--hd),color-mix(in srgb,var(--hd) 70%,var(--c2))); color:var(--hdink); padding:18px 22px; border-radius:14px; margin-bottom:16px}
-.top h1{color:var(--hdink)}
-.top .lead{color:var(--hdink); opacity:.88; margin:0}
-.credit{color:var(--c2); opacity:1; font-weight:600}
-.tab:hover{color:var(--ink); background:var(--soft); border-radius:8px 8px 0 0}
-.tab[aria-selected="true"]{color:var(--accent); border-bottom-color:var(--c2)}
-.panel{border-top:4px solid var(--accent); box-shadow:0 1px 3px rgba(0,0,0,.06)}
-input:focus,select:focus{border-color:var(--accent)}
-button.sec{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
-button.sec:hover:not(:disabled){filter:brightness(1.1)}
-#tclear{background:transparent; color:var(--err); border-color:var(--err)}
-.bc button.sec.sm:first-child{background:var(--soft); color:var(--accent); border-color:var(--accent)}
-.bc button.sec.sm:last-child{background:var(--warm); color:var(--ink); border-color:var(--warmline)}
-.tbl thead th{background:var(--soft); color:var(--ink)}
-.tbl thead th:first-child{border-radius:8px 0 0 8px}
-.tbl thead th:last-child{border-radius:0 8px 8px 0}
-.tbl tbody tr:nth-child(even){background:var(--zebra)}
-.tbl tbody tr:hover{background:var(--soft)}
-.tbl td:first-child{color:var(--accent); font-weight:700}
-.rd{color:var(--accent)}
-.group-h{color:var(--accent); border-bottom:2px solid var(--c2); padding-bottom:4px; display:inline-block}
-.months>div{background:var(--zebra); border:1px solid var(--line); border-radius:10px; padding:10px}
-.mh{color:var(--accent)}
-.c.cnt{background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
-.c.st{border-color:var(--c2)}
-.c.en{background:var(--c2); color:#1a1a1a}
-.dh h2{color:var(--accent)}
-table.mt thead th{background:var(--soft); color:var(--ink)}
-table.mt tfoot th{background:var(--warm)}
-#cdlg{max-width:1100px; max-height:92vh; overflow:auto; padding:0}
-.chead{position:sticky; top:0; z-index:5; background:var(--surface); padding:20px 20px 12px; border-bottom:2px solid var(--c2)}
-.cbody{padding:0 20px 20px}
-.cellbtn{font:inherit; font-weight:700; color:var(--accent); background:var(--soft); border:1px solid var(--accent); border-radius:6px; padding:2px 12px; cursor:pointer; min-width:40px}
-.cellbtn:hover{background:var(--accent); color:var(--accent-ink)}
-.sorth{font:inherit; font-weight:700; color:inherit; background:none; border:0; cursor:pointer; padding:3px 8px; border-radius:6px; white-space:nowrap}
-.sorth:hover{background:var(--chip)}
-.sorth .arr{color:var(--c2); display:inline-block; min-width:1em}
-.sorth .arr.off{color:var(--muted); opacity:.7}
-.tbl th.c-view,.tbl td.bc{text-align:center}
-.tbl .bc button:last-child{margin-right:0}
-.tbl th.c-xc,.tbl td.xc{text-align:center; width:90px}
-.tbl td.xc input{width:20px; height:20px; padding:0; accent-color:var(--c2); cursor:pointer}
-.tbl tr.inactive{background:color-mix(in srgb,var(--c2) 16%,var(--surface))!important}
-.tbl tr.inactive td:not(.xc){opacity:.55}
-.stat:not(.bad){color:var(--accent)}
-[hidden]{display:none!important}
-@media (max-width:800px){.add{grid-template-columns:1fr}}
-
-/* ---- Στυλ Νέας Καρτέλας: Πρόγραμμα Μαθημάτων ---- */
-.subtabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap}
-.subtab-btn{font:inherit; font-weight:600; font-size:.95rem; padding:7px 14px; border-radius:8px; border:1px solid var(--line); background:var(--chip); color:var(--ink); cursor:pointer}
-.subtab-btn.active{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
-.subtab-pane{display:none}
-.subtab-pane.active{display:block}
-.lp-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:14px 0}
-.lp-row input[type=date]{width:auto; min-width:170px; font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:9px 12px}
-.lp-day-badge{background:var(--soft); color:var(--accent); padding:9px 16px; border-radius:8px; font-weight:700; border:1px solid var(--line); min-width:130px; text-align:center}
-.lp-summary{margin:12px 0; padding:10px 14px; background:var(--soft); border:1px solid var(--line); border-radius:8px; font-weight:600; display:flex; gap:24px; flex-wrap:wrap}
-table.lptbl{width:100%; border-collapse:collapse; margin-top:12px; font-size:.95rem}
-table.lptbl th{background:var(--hd); color:var(--hdink); text-align:left; padding:10px 12px}
-table.lptbl td{padding:9px 12px; border-bottom:1px solid var(--line)}
-table.lptbl th.center, table.lptbl td.center{text-align:center}
-table.lptbl tr.lesson-row:nth-child(even){background:var(--zebra)}
-table.lptbl tr.holiday-row{background:color-mix(in srgb,var(--err) 10%,var(--surface)); color:var(--muted)}
-table.lptbl tr.final-lesson-row{background:var(--warm) !important; font-weight:700; border-top:2px solid var(--c2); border-bottom:2px solid var(--c2)}
-table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); font-weight:700; padding:8px 12px; border-top:2px solid var(--accent); border-bottom:1px solid var(--line)}
-.month-summary{float:right; font-size:.82rem; font-weight:700; background:var(--surface); color:var(--accent); padding:2px 10px; border-radius:999px; border:1px solid var(--line)}
-.lp-badge{padding:3px 10px; border-radius:999px; font-size:.82rem; font-weight:700; display:inline-block}
-.lp-badge-ok{background:var(--soft); color:var(--accent); border:1px solid var(--line)}
-.lp-badge-end{background:var(--warm); color:#856404; border:1px solid var(--c2)}
-.lp-badge-off{background:color-mix(in srgb,var(--err) 18%,var(--surface)); color:var(--err)}
-.lp-reason-off{font-size:.85rem; color:var(--err); font-style:italic}
-.lp-reason-end{font-size:.85rem; color:#9a6700; font-weight:700}
-.lp-reason-ok{font-size:.85rem; color:var(--muted); font-style:italic}
-.lp-custom-box{background:var(--bg); padding:14px; border-radius:10px; border:1px solid var(--line); margin-bottom:16px}
-.lp-custom-grid{display:grid; grid-template-columns:160px 160px 1fr auto; gap:10px; align-items:end}
-@media(max-width:720px){.lp-custom-grid{grid-template-columns:1fr}}
-
-
-
-  
-</style>
-<script src="https://sheetjs.com"></script>
+<title>Υπολογισμός Εργάσιμων Ημερών & Πρόγραμμα Μαθημάτων</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <main>
-  
-<!-- Ετικέτα στην Αρχή της σελίδας -->
-  
  <div class="top">
     <div>
       <h1 style="font-size: 24px; font-weight: normal;">Υπολογισμός Εργάσιμων Ημερών</h1>
-      <p class="lead" style="font-size: 16px;">Εύρεση της 156ης Hμέρας της Μαθητείας<span id="sylead" hidden></span></p>
+      <p class="lead" style="font-size: 16px;">Εύρεση της 156ης Hμέρας της Μαθητείας &amp; Πρόγραμμα Μαθημάτων<span id="sylead" hidden></span></p>
     </div>
     <p class="credit" style="font-size: 12px;">&copy; 2026 Ραβασόπουλος Γιώργος - Πάτρα </p>
  </div>
-
- 
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-team" aria-selected="true" aria-controls="p-team">Τμήμα</button>
@@ -232,7 +24,6 @@ table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); 
     <button class="tab" role="tab" id="tab-peri" aria-selected="false" aria-controls="p-peri">Περί</button>
   </div>
 
-  <!-- Τμήμα -->
   <section id="p-team" role="tabpanel" aria-labelledby="tab-team">
     <p class="stat bad" id="tstat" role="alert" hidden></p>
     <div class="panel">
@@ -240,7 +31,7 @@ table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); 
       <p class="hint">Τα δεδομένα αποθηκεύονται αυτόματα σε αυτόν τον browser.</p>
       <div class="tbl">
         <table>
-          <thead><tr><th>Α/Α</th><th><button class="sorth" data-sort="name" type="button" title="Ταξινόμηση κατά Ονοματεπώνυμο">Ονοματεπώνυμο <span class="arr"></span></button></th><th><button class="sorth" data-sort="start" type="button" title="Ταξινόμηση κατά έναρξη">Έναρξη <span class="arr"></span></button></th><th>Απουσίες</th><th><button class="sorth" data-sort="end" type="button" title="Ταξινόμηση κατά λήξη">Λήξη <span class="arr"></span></button></th><th class="c-view">Προβολή</th><th class="c-xc">Ανενεργό</th></tr></thead>
+          <thead><tr><th>Α/Α</th><th><button class="sorth" data-sort="name" type="button">Ονοματεπώνυμο <span class="arr"></span></button></th><th><button class="sorth" data-sort="start" type="button">Έναρξη <span class="arr"></span></button></th><th>Απουσίες</th><th><button class="sorth" data-sort="end" type="button">Λήξη <span class="arr"></span></button></th><th class="c-view">Προβολή</th><th class="c-xc">Ανενεργό</th></tr></thead>
           <tbody id="tbody"></tbody>
         </table>
       </div>
@@ -250,13 +41,13 @@ table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); 
         <button class="sec" id="tload" type="button">Φόρτωση από κείμενο</button>
         <button class="sec" id="tclear" type="button">Καθαρισμός όλων</button>
       </div>
-      <textarea id="tcsv" aria-label="Δεδομένα CSV" placeholder="Εδώ εμφανίζεται το CSV. Για φόρτωση, επικόλλησε εδώ δεδομένα και πάτα «Φόρτωση από κείμενο»."></textarea>
+      <textarea id="tcsv" aria-label="Δεδομένα CSV" placeholder="Εδώ εμφανίζεται το CSV."></textarea>
       <p class="hint" id="tmsg" style="margin:10px 0 0" aria-live="polite"></p>
     </div>
- </section>
-    
-    <!-- ΝΕΑ ΚΑΡΤΕΛΑ: Πρόγραμμα Μαθημάτων -->
-  <section id="p-lessons" role="tabpanel" aria-labelledby="tab-lessons" hidden>
+  </section>
+
+
+<section id="p-lessons" role="tabpanel" aria-labelledby="tab-lessons" hidden>
     <div class="panel">
       <h2>Προγραμματισμός Εβδομαδιαίων Μαθημάτων (29 Μαθήματα)</h2>
       <p class="hint">Επίλεξε ημερομηνία έναρξης. Το πρόγραμμα υπολογίζει αυτόματα τις εβδομαδιαίες συναντήσεις έως το τέλος Ιουνίου, εξαιρεί τις αργίες/διακοπές και σταματά στο 29ο μάθημα.</p>
@@ -295,17 +86,17 @@ table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); 
         </div>
       </div>
 
-      <div id="lp-sub-hol" class="subtab-pane">
+<div id="lp-sub-hol" class="subtab-pane">
         <div class="lp-custom-box">
           <h3 style="margin:0 0 10px; font-size:1rem;">Προσθήκη Προσωπικής Αργίας / Διακοπών</h3>
           <div class="lp-custom-grid">
             <div>
               <label class="field" for="lpCustomStart">Από</label>
-              <input type="date" id="lpCustomStart" style="width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;">
+              <input type="date" id="lpCustomStart">
             </div>
             <div>
               <label class="field" for="lpCustomEnd">Έως (προαιρετικό)</label>
-              <input type="date" id="lpCustomEnd" style="width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;">
+              <input type="date" id="lpCustomEnd">
             </div>
             <div>
               <label class="field" for="lpCustomTitle">Περιγραφή</label>
@@ -335,68 +126,44 @@ table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); 
       </div>
     </div>
   </section>
- 
 
-  <!-- Ημερολόγιο (παράθυρο) -->
-  <dialog id="cdlg" aria-labelledby="calttl">
+
+<dialog id="cdlg" aria-labelledby="calttl">
     <div class="chead">
-    <div class="dh">
-      <h2 id="calttl"></h2>
-      <button class="sec sm" id="cclose" type="button">Κλείσιμο</button>
-    </div>
-    <p class="hint" id="calinfo" style="margin:0"></p>
-    <div class="legend-row">
-      <span><i style="background:color-mix(in srgb,var(--accent) 22%,var(--surface))"></i>Εργάσιμη (με αρίθμηση)</span>
-      <span><i style="background:color-mix(in srgb,var(--err) 24%,var(--surface))"></i>Αργία</span>
-      <span><i style="border-color:var(--c2)"></i>Έναρξη</span>
-      <span><i style="background:var(--c2)"></i>Τελευταία εργάσιμη</span>
-    </div>
+      <div class="dh"><h2 id="calttl"></h2><button class="sec sm" id="cclose" type="button">Κλείσιμο</button></div>
+      <p class="hint" id="calinfo" style="margin:0"></p>
+      <div class="legend-row">
+        <span><i style="background:color-mix(in srgb,var(--accent) 22%,var(--surface))"></i>Εργάσιμη</span>
+        <span><i style="background:color-mix(in srgb,var(--err) 24%,var(--surface))"></i>Αργία</span>
+        <span><i style="border-color:var(--c2)"></i>Έναρξη</span>
+        <span><i style="background:var(--c2)"></i>Τελευταία εργάσιμη</span>
+      </div>
     </div>
     <div class="cbody"><div class="months" id="months"></div></div>
   </dialog>
 
-  <!-- Ρυθμίσεις -->
   <section id="p-set" role="tabpanel" aria-labelledby="tab-set" hidden>
-    <div class="panel"style="max-width:900px">
+    <div class="panel" style="max-width:900px">
       <div class="legend" id="dlabel">Εργάσιμες ημέρες εβδομάδας</div>
       <div class="days" role="group" aria-labelledby="dlabel" id="days"></div>
-      <p class="hint" style="margin:0">Επίλεξε ακριβώς 4 εργάσιμες ανά εβδομάδα. Η Κυριακή είναι πάντα αργία. Η ημέρα έναρξης μετράει ως 1η αν είναι εργάσιμη.</p>
+      <p class="hint" style="margin:0">Επίλεξε ακριβώς 4 εργάσιμες ανά εβδομάδα.</p>
       <p class="stat" id="dstat" style="margin:10px 0 0" aria-live="polite"></p>
     </div>
-
-    <div class="panel"style="max-width:900px">
+    <div class="panel" style="max-width:900px">
       <h2>Σχολικό έτος</h2>
-      <p class="hint">Γράψε το σχολικό έτος, π.χ. 2026-27. Από αυτό υπολογίζονται οι αργίες, το ημερολόγιο, ο έλεγχος των ημερομηνιών έναρξης και η συμπλήρωση των 156 εργάσιμων.</p>
-      <div class="sybox">
-        <label class="field" for="sy">Σχολικό έτος</label>
-        <input type="text" id="sy" placeholder="π.χ. 2026-27" autocomplete="off">
-      </div>
+      <div class="sybox"><label class="field" for="sy">Σχολικό έτος</label><input type="text" id="sy" placeholder="π.χ. 2026-27" autocomplete="off"></div>
       <p class="hint" id="sypv" style="margin:10px 0 0"></p>
     </div>
-
-    <div class="panel"style="max-width:900px">
+    <div class="panel" style="max-width:900px">
       <h2>Επίσημες αργίες</h2>
-      <p class="hint">Οι πρώτες είναι σταθερές και οι υπόλοιπες κινητές, με βάση το Ορθόδοξο Πάσχα. Ό,τι είναι τσεκαρισμένο εξαιρείται από τις εργάσιμες. Οι ημερομηνίες είναι για το σχολικό έτος που έχεις ορίσει.</p>
       <div id="official"></div>
-      <div class="tools">
-        <button class="sec" id="all" type="button">Επιλογή όλων</button>
-        <button class="sec" id="none" type="button">Καμία</button>
-        <button class="sec" id="reset" type="button">Επαναφορά προεπιλογών</button>
-      </div>
+      <div class="tools"><button class="sec" id="all" type="button">Επιλογή όλων</button><button class="sec" id="none" type="button">Καμία</button><button class="sec" id="reset" type="button">Επαναφορά προεπιλογών</button></div>
     </div>
-
-    <div class="panel"style="max-width:900px">
+    <div class="panel" style="max-width:900px">
       <h2>Δικές σου αργίες</h2>
-      <p class="hint">Πρόσθεσε ημερομηνίες που δεν υπάρχουν παραπάνω, όπως τοπική εορτή, άδεια ή κλείσιμο της επιχείρησης.</p>
       <div class="add">
-        <div>
-          <label class="field" for="cdate">Ημερομηνία</label>
-          <input type="text" id="cdate">
-        </div>
-        <div>
-          <label class="field" for="cname">Περιγραφή</label>
-          <input type="text" id="cname" placeholder="π.χ. Τοπική εορτή">
-        </div>
+        <div><label class="field" for="cdate">Ημερομηνία</label><input type="text" id="cdate"></div>
+        <div><label class="field" for="cname">Περιγραφή</label><input type="text" id="cname" placeholder="π.χ. Τοπική εορτή"></div>
         <button class="sec" id="cadd" type="button">Προσθήκη</button>
       </div>
       <p class="hint" id="cmsg" style="margin:10px 0 0" aria-live="polite"></p>
@@ -404,1065 +171,77 @@ table.lptbl tr.month-header-row td{background:var(--soft); color:var(--accent); 
     </div>
   </section>
 
-  <!-- Οδηγίες -->
-  <section id="p-help" role="tabpanel" aria-labelledby="tab-help" hidden>
+    <section id="p-help" role="tabpanel" aria-labelledby="tab-help" hidden>
     <div class="panel" style="max-width:1100px">
-      <h2>Οδηγίες χρήσης</h2>
-      <ul style="padding-left:20px; margin:12px 0 0; line-height:1.5; font-size:15px;">
-        <li>Κάθε άτομο έχει τη δική του ημερομηνία έναρξης, σε μορφή <strong>ηη/μμ/εεεε</strong>, πληκτρολογώντας την ή επιλέγοντάς την από το ημερολόγιο.</li>
-        <li>Τις Απουσίες (<strong>0–5</strong>) τις προσθέτει το πρόγραμμα στις 156 εργάσιμες και η λήξη μετακινείται αντίστοιχα.</li>
-        <li>Ταξινόμησε την λίστα με κριτήρια τις στήλες (<strong>Ονοματεπώνυμο, Έναρξη, Λήξη</strong>) κάνοντας κλικ πάνω στους τίτλους των στηλών.</li>
-        <li>Άνοιξε και δες το Ημερολόγιο κάθε Μαθητευόμενου πατώντας το πλήκτρο <strong>(Ημερολόγιο)</strong>.</li>
-        <li>Δες τις Ημέρες ανα Μήνα κάθε Μαθητευόμενου πατώντας το πλήκτρο <strong>(Ημέρες/Μήνα)</strong> και πάτα σε έναν απο τους αριθμούς της στήλης «Εργάσιμες» για να δεις τον μήνα στο ημερολόγιο.</li>
-        <li>Τα δεδομένα αποθηκεύονται αυτόματα σε αυτόν τον browser.</li>
-        <li><strong>Προσοχή:</strong> βάλε τοπική/ές αργίες στην καρτέλα <strong>Ρυθμίσεις</strong>.</li>
-        <li>Στείλε σχόλια στο email <a href="mailto:grav@sch.gr" style="color:var(--accent); font-weight:600">grav@sch.gr</a></li>
+      <h2>Οδηγίες Χρήσης της Εφαρμογής</h2>
+      
+      <h3 style="font-size:1rem; margin:16px 0 6px; color:var(--accent);">1. Καρτέλα «Τμήμα» (156 Εργάσιμες Μαθητείας)</h3>
+      <ul style="padding-left:20px; margin:0; line-height:1.6; font-size:15px;">
+        <li><strong>Καταχώριση:</strong> Συμπλήρωσε Ονοματεπώνυμο, ημερομηνία Έναρξης (σε μορφή <strong>ηη/μμ/εεεε</strong> ή από το εικονίδιο του ημερολογίου) και Απουσίες (<strong>0–5</strong>).</li>
+        <li><strong>Αυτόματος υπολογισμός:</strong> Η εφαρμογή προσθέτει τις απουσίες στις 156 εργάσιμες, εξαιρεί τις αργίες και υπολογίζει αυτόματα την ημερομηνία και ημέρα Λήξης.</li>
+        <li><strong>Προβολή &amp; Ταξινόμηση:</strong> Πάτα στους τίτλους των στηλών για ταξινόμηση, ή χρησιμοποίησε τα κουμπιά <strong>Ημερολόγιο</strong> και <strong>Ημέρες/Μήνα</strong> για αναλυτική εικόνα ανά άτομο.</li>
+        <li><strong>Ανενεργό:</strong> Τσεκάροντας το πλαίσιο «Ανενεργό» στα δεξιά, η γραμμή του μαθητευόμενου επισημαίνεται με ροζ χρώμα.</li>
+        <li><strong>Εξαγωγή &amp; Αντίγραφα:</strong> Εξήγαγε τα στοιχεία του τμήματος και τις αργίες σε αρχείο <strong>Excel</strong> ή δημιούργησε κείμενο <strong>CSV</strong> για αποθήκευση και επαναφόρτωση.</li>
+      </ul>
+
+      <h3 style="font-size:1rem; margin:16px 0 6px; color:var(--accent);">2. Καρτέλα «Πρόγραμμα Μαθημάτων» (29 Συναντήσεις)</h3>
+      <ul style="padding-left:20px; margin:0; line-height:1.6; font-size:15px;">
+        <li><strong>Πρόγραμμα:</strong> Επίλεξε την ημερομηνία έναρξης και η εφαρμογή θα δημιουργήσει αυτόματα όλες τις εβδομαδιαίες συναντήσεις έως το τέλος Ιουνίου, ομαδοποιημένες ανά μήνα.</li>
+        <li><strong>Όριο 29 Μαθημάτων:</strong> Εξαιρούνται αυτόματα οι επίσημες αργίες και οι διακοπές Χριστουγέννων/Πάσχα. Μόλις συμπληρωθεί το <strong>29ο Μάθημα</strong>, επισημαίνεται ως <em>«Λήξη Μαθημάτων - Αξιολόγηση»</em> και οι υπόλοιπες ημερομηνίες απενεργοποιούνται.</li>
+        <li><strong>Χειροκίνητη τροποποίηση:</strong> Μπορείς να ενεργοποιήσεις ή να απενεργοποιήσεις οποιαδήποτε ημερομηνία από το πλαίσιο επιλογής στα αριστερά· η αρίθμηση και η λήξη αναπροσαρμόζονται αυτόματα.</li>
+        <li><strong>Αργίες &amp; Διακοπές:</strong> Στη δεύτερη υποκαρτέλα βλέπεις όλες τις αργίες του διαστήματος και μπορείς να προσθέσεις δικές σου (μεμονωμένες ημέρες ή διαστήματα).</li>
+      </ul>
+
+      <h3 style="font-size:1rem; margin:16px 0 6px; color:var(--accent);">3. Καρτέλα «Ρυθμίσεις» &amp; Αποθήκευση</h3>
+      <ul style="padding-left:20px; margin:0; line-height:1.6; font-size:15px;">
+        <li><strong>Παραμετροποίηση:</strong> Όρισε τις <strong>4 εργάσιμες ημέρες</strong> της εβδομάδας, το <strong>Σχολικό Έτος</strong> (π.χ. 2026-27), τις επίσημες αργίες που ισχύουν και τυχόν τοπικές εορτές.</li>
+        <li><strong>Αυτόματη Αποθήκευση:</strong> Όλα τα δεδομένα αποθηκεύονται τοπικά στον browser σου ώστε να παραμένουν διαθέσιμα κάθε φορά που ανοίγεις τη σελίδα.</li>
+        <li><strong>Επικοινωνία:</strong> Για παρατηρήσεις ή προτάσεις βελτίωσης στείλε email στο <a href="mailto:grav@sch.gr" style="color:var(--accent); font-weight:600">grav@sch.gr</a>.</li>
       </ul>
     </div>
   </section>
 
-<!-- Οδηγίες -->
+
   <section id="p-peri" role="tabpanel" aria-labelledby="tab-peri" hidden>
     <div class="panel" style="max-width:1100px">
       <h2>Περί της Εφαρμογής</h2>
       <ul style="padding-left:20px; margin:12px 0 0; line-height:1.5; font-size:15px;">
-        <li>Η Εφαρμογή δημιουργήθηκε για να χρησιμοποιηθεί από τους <strong>Διδάσκοντες – Επόπτες</strong> των Τμημάτων του Μεταλυκειακού Έτους – Τάξη Μαθητείας.</li>
-        <li>Δημιουργήθηκε απο τον Συντονιστή Μαθητείας της Περιφερειακής Διεύθυνσης Εκπαίδευσης Δυτικής Ελλάδας τον <strong>Νοέμβριο του 2026</strong>.</li>
-        <li>Ο κώδικας της Εφαρμογής είναι γραμμένος σε HTML</li>
+        <li>Δημιουργήθηκε από τον Συντονιστή Μαθητείας ΠΔΕ Δυτικής Ελλάδας τον <strong>Νοέμβριο του 2026</strong>.</li>
       </ul>
-      <!-- Εμφάνιση φωτογραφίας -->
-      <img src="fatsa.jpg" alt="Περιγραφή" style="width: 100px"; max-width: 100%; height: auto; border-radius: 8px; margin-top: 15px;">
-  </div>
+      <img src="fatsa.jpg" alt="Περιγραφή" style="width: 100px; max-width: 100%; height: auto; border-radius: 8px; margin-top: 15px;">
     </div>
   </section>
-
-
-
-  
 </main>
 
 <dialog id="mdlg" aria-labelledby="mttl">
-  <div class="dh">
-    <h2 id="mttl"></h2>
-    <button class="sec sm" id="mclose" type="button">Κλείσιμο</button>
-  </div>
+  <div class="dh"><h2 id="mttl"></h2><button class="sec sm" id="mclose" type="button">Κλείσιμο</button></div>
   <div id="mbody"></div>
 </dialog>
 
-<script>
-(function(){
-  var DAY=86400000, N=156, TEAM=24, ISO=/^\d{4}-\d{2}-\d{2}$/;
-  var WD=["Δευτέρα","Τρίτη","Τετάρτη","Πέμπτη","Παρασκευή","Σάββατο"];
-  var WDS=["Κυρ","Δευ","Τρί","Τετ","Πέμ","Παρ","Σάβ"];
-  var WDF=["Κυριακή","Δευτέρα","Τρίτη","Τετάρτη","Πέμπτη","Παρασκευή","Σάββατο"];
-  var HOL=[
-    {k:"f-1-1",m:1,d:1,n:"Πρωτοχρονιά",g:"f"},
-    {k:"f-1-6",m:1,d:6,n:"Θεοφάνεια",g:"f"},
-    {k:"f-3-25",m:3,d:25,n:"Εθνική εορτή (25η Μαρτίου)",g:"f"},
-    {k:"f-5-1",m:5,d:1,n:"Πρωτομαγιά (μετακινείται στην 1η εργάσιμη αν πέφτει σε αργία)",g:"f"},
-    {k:"f-8-15",m:8,d:15,n:"Κοίμηση της Θεοτόκου",g:"f"},
-    {k:"f-10-28",m:10,d:28,n:"Ημέρα του Όχι (28η Οκτωβρίου)",g:"f"},
-    {k:"f-12-25",m:12,d:25,n:"Χριστούγεννα",g:"f"},
-    {k:"f-12-26",m:12,d:26,n:"Σύναξη της Θεοτόκου",g:"f"},
-    {k:"e-48",o:-48,n:"Καθαρά Δευτέρα",g:"e"},
-    {k:"e-2",o:-2,n:"Μεγάλη Παρασκευή",g:"e"},
-    {k:"e-1",o:-1,n:"Μεγάλο Σάββατο",g:"e"},
-    {k:"e0",o:0,n:"Κυριακή του Πάσχα",g:"e"},
-    {k:"e1",o:1,n:"Δευτέρα του Πάσχα",g:"e"},
-    {k:"e50",o:50,n:"Αγίου Πνεύματος",g:"e"}
-  ];
-  var DEFAULT_OFF=["e-1"];
-
-  /* ---------- αποθήκευση ---------- */
-  var KEY="ergasimes-v1";
-  var state={off:DEFAULT_OFF.slice(),custom:[],days:[1,2,3,4],team:[],sy:2026,sort:"name",dir:"asc"};
-  try{
-    var raw=localStorage.getItem(KEY);
-    if(raw){
-      var s0=JSON.parse(raw);
-      if(s0&&s0.off&&s0.custom){state.off=s0.off; state.custom=s0.custom;}
-      if(s0&&s0.days&&s0.days.length===4) state.days=s0.days;
-      if(s0&&s0.team) state.team=s0.team;
-      if(s0&&s0.sy>=1990&&s0.sy<=2098) state.sy=s0.sy;
-      if(s0&&(s0.sort==="name"||s0.sort==="start"||s0.sort==="end")) state.sort=s0.sort;
-      if(s0&&s0.dir==="desc") state.dir="desc";
-    }
-  }catch(e){}
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
-  function teamInit(){
-    while(state.team.length<TEAM) state.team.push({name:"",start:"",abs:0});
-    state.team=state.team.slice(0,TEAM);
+<script src="mathiteia.js"></script>
+<script src="lessons.js"></script>
+<style>
+  #cdlg > div:first-child {
+    position: sticky;
+    top: -24px;
+    margin: -24px -24px 16px -24px;
+    padding: 20px 24px 12px 24px;
+    background-color: #ffffff;
+    z-index: 10;
+    border-bottom: 1px solid #e2e8f0;
   }
-  teamInit();
+</style>
 
-  /* ---------- σχολικό έτος ---------- */
-  function syStart(){return Date.UTC(state.sy,8,1);}
-  function syEnd(){return Date.UTC(state.sy+1,7,31);}
-  function syLabel(){return state.sy+"–"+String(state.sy+1).slice(2);}
 
-  /* ---------- ημερομηνίες (ηη/μμ/εεεε) ---------- */
-  function pad(x){return String(x).padStart(2,"0");}
-  function iso(ms){var d=new Date(ms);return d.getUTCFullYear()+"-"+pad(d.getUTCMonth()+1)+"-"+pad(d.getUTCDate());}
-  function dmy(ms){var d=new Date(ms);return pad(d.getUTCDate())+"/"+pad(d.getUTCMonth()+1)+"/"+d.getUTCFullYear();}
-  function fmtW(ms){return WDS[new Date(ms).getUTCDay()]+" "+dmy(ms);}
-  function parseISO(s){
-    if(!ISO.test(s||"")) return null;
-    var p=s.split("-").map(Number); return Date.UTC(p[0],p[1]-1,p[2]);
-  }
-  function parseDMY(s){
-    var m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s||""); if(!m) return null;
-    var d=+m[1],mo=+m[2],y=+m[3], ms=Date.UTC(y,mo-1,d), t=new Date(ms);
-    return (t.getUTCFullYear()===y && t.getUTCMonth()===mo-1 && t.getUTCDate()===d && y>=1900 && y<=2200)?ms:null;
-  }
-  function parseAny(s){s=(s||"").trim(); var a=parseDMY(s); return a!==null?a:parseISO(s);}
-  function maskInput(inp,onChange){
-    inp.type="text"; inp.inputMode="numeric"; inp.placeholder="ηη/μμ/εεεε"; inp.maxLength=10; inp.autocomplete="off";
-    inp.addEventListener("input",function(){
-      var raw=inp.value.replace(/[.\-]/g,"/").replace(/^(\d)\/$/,function(m,a){return "0"+a+"/";}).replace(/^(\d\d\/)(\d)\/$/,function(m,a,b){return a+"0"+b+"/";});
-      var dg=raw.replace(/\D/g,"").slice(0,8), out=dg;
-      if(dg.length>4) out=dg.slice(0,2)+"/"+dg.slice(2,4)+"/"+dg.slice(4);
-      else if(dg.length>2) out=dg.slice(0,2)+"/"+dg.slice(2);
-      inp.value=out;
-      var ms=parseDMY(out);
-      inp.setAttribute("aria-invalid",(out.length===10 && ms===null)?"true":"false");
-      onChange(ms,out);
-    });
-  }
-  function withPicker(inp,onPick){
-    var wrap=document.createElement("div"); wrap.className="dp";
-    var pk=document.createElement("span"); pk.className="pk";
-    pk.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2 6.5h12M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
-    var di=document.createElement("input"); di.type="date";
-    di.setAttribute("aria-label","Επιλογή ημερομηνίας από ημερολόγιο");
-    function lim(){di.min="1990-01-01"; di.max="2098-12-31";}
-    function sync(){
-      var ms=parseDMY(inp.value);
-      di.value=ms!==null?iso(ms):"";
-    }
-    lim(); sync();
-    di.addEventListener("pointerdown",lim);
-    di.addEventListener("focus",lim);
-    di.addEventListener("click",function(){lim(); try{di.showPicker();}catch(e){}});
-    di.addEventListener("change",function(){
-      var ms=parseISO(di.value); if(ms===null) return;
-      inp.value=dmy(ms); inp.setAttribute("aria-invalid","false"); onPick(ms);
-    });
-    inp.addEventListener("input",sync);
-    pk.appendChild(di); wrap.appendChild(inp); wrap.appendChild(pk);
-    return wrap;
-  }
-  function flagSY(inp,v){
-    var bad=v!==null && (v<syStart()||v>syEnd());
-    if(v!==null) inp.setAttribute("aria-invalid",bad?"true":"false");
-    inp.title=bad?"Εκτός σχολικού έτους "+syLabel():"";
-  }
-  function easter(y){
-    var a=y%4,b=y%7,c=y%19,d=(19*c+15)%30,e=(2*a+4*b-d+34)%7;
-    var m=Math.floor((d+e+114)/31), dd=((d+e+114)%31)+1;
-    return Date.UTC(y,m-1,dd+13);
-  }
-  function holMs(h,y){return h.g==="f"?Date.UTC(y,h.m-1,h.d):easter(y)+h.o*DAY;}
 
-  /* ---------- αργίες ---------- */
-  var cache={};
-  function resetCache(){cache={};}
-  function othersMap(y){
-    var map={};
-    HOL.forEach(function(h){ if(h.k!=="f-5-1" && state.off.indexOf(h.k)<0) map[holMs(h,y)]=h.n; });
-    return map;
-  }
-  function mayShift(y,map){
-    var ms=Date.UTC(y,4,1);
-    for(var g=0;g<14 && (state.days.indexOf(new Date(ms).getUTCDay())<0 || map[ms]);g++) ms+=DAY;
-    return ms;
-  }
-  function yearMap(y){
-    if(cache[y]) return cache[y];
-    var map=othersMap(y);
-    if(state.off.indexOf("f-5-1")<0){
-      var ms=mayShift(y,map);
-      map[ms]=ms===Date.UTC(y,4,1)?"Πρωτομαγιά":"Πρωτομαγιά (μετακινήθηκε από 1/5)";
-    }
-    cache[y]=map; return map;
-  }
-  function customMap(){
-    var m={};
-    state.custom.forEach(function(c){var ms=parseISO(c.date); if(ms!==null) m[ms]=c.name||"Δική σου αργία";});
-    return m;
-  }
 
-  /* ---------- υπολογισμός ---------- */
-  function absOf(r){var v=parseInt(r.abs,10); return (v>=0&&v<=5)?v:0;}
-  function workSet(){var w={}; state.days.forEach(function(d){w[d]=true;}); return w;}
-  function ctx(){return {n:N,work:workSet(),cm:customMap(),ok:state.days.length===4};}
-  function endFor(s,n,work,cm){
-    function hn(ms){return cm[ms]||yearMap(new Date(ms).getUTCFullYear())[ms]||null;}
-    var d=s,count=0,guard=0,skipped=[],idx={};
-    if(work[new Date(d).getUTCDay()]){
-      var h0=hn(d);
-      if(h0) skipped.push({ms:d,name:h0}); else {count=1; idx[d]=1;}
-    }
-    while(count<n && guard<200000){
-      guard++; d+=DAY;
-      if(!work[new Date(d).getUTCDay()]) continue;
-      var h=hn(d);
-      if(h){skipped.push({ms:d,name:h}); continue;}
-      count++; idx[d]=count;
-    }
-    return {end:d,skipped:skipped,idx:idx};
-  }
 
-  /* ---------- καρτέλες ---------- */
-  var tabs={team:document.getElementById("tab-team"),set:document.getElementById("tab-set")};
-  var panes={team:document.getElementById("p-team"),set:document.getElementById("p-set")};
-  var pendingCal=null;
-  function show(which){
-    Object.keys(tabs).forEach(function(k){var on=k===which; tabs[k].setAttribute("aria-selected",on); panes[k].hidden=!on;});
-    if(which==="team") refreshTeam();
-  }
-  Object.keys(tabs).forEach(function(k){tabs[k].addEventListener("click",function(){show(k);});});
-
-  /* ---------- ρυθμίσεις: εργάσιμες ημέρες ---------- */
-  var box=document.getElementById("days"), dstat=document.getElementById("dstat");
-  WD.forEach(function(nm,i){
-    var l=document.createElement("label"); l.className="day";
-    var c=document.createElement("input"); c.type="checkbox"; c.value=String(i+1); c.checked=state.days.indexOf(i+1)>=0;
-    c.addEventListener("change",syncDays);
-    var sp=document.createElement("span"); sp.textContent=nm;
-    l.appendChild(c); l.appendChild(sp); box.appendChild(l);
-  });
-  function syncDays(){
-    var all=[].slice.call(box.querySelectorAll("input"));
-    var on=all.filter(function(x){return x.checked;});
-    state.days=on.map(function(x){return +x.value;});
-    all.forEach(function(x){x.disabled=!x.checked && on.length>=4;});
-    dstat.className="stat"+(on.length===4?"":" bad");
-    dstat.textContent=on.length===4?"Έχεις επιλέξει 4 από 4 ημέρες.":"Έχεις επιλέξει "+on.length+" από 4 ημέρες. Χρειάζονται ακριβώς 4.";
-    resetCache(); save();
-    if(typeof refreshTeam==="function") refreshTeam();
-  }
-  /* ---------- ρυθμίσεις: σχολικό έτος ---------- */
-  var syIn=document.getElementById("sy");
-  function parseSY(s){
-    s=(s||"").trim();
-    var m=/^(\d{4})(?:\s*[-–\/]\s*(\d{4}|\d{2}))?$/.exec(s), a, b;
-    if(m){ a=+m[1]; b=(m[2]!==undefined)?(+m[2])%100:null; }
-    else {
-      m=/^(\d{2})\s*[-–\/]\s*(\d{2})$/.exec(s); if(!m) return null;
-      a=2000+(+m[1]); b=+m[2];
-    }
-    if(b!==null && b!==(a+1)%100) return null;
-    return (a>=1990&&a<=2098)?a:null;
-  }
-  function updateSYText(){
-    document.getElementById("sylead").textContent=syLabel();
-    document.getElementById("sypv").textContent="Από "+dmy(syStart())+" έως "+dmy(syEnd())+".";
-  }
-  syIn.value=syLabel();
-  syIn.addEventListener("input",function(){
-    var y=parseSY(syIn.value);
-    if(y===null){syIn.setAttribute("aria-invalid","true"); return;}
-    syIn.setAttribute("aria-invalid","false");
-    state.sy=y; save(); updateSYText(); renderOfficial(); renderTeam();
-  });
-  syIn.addEventListener("blur",function(){syIn.value=syLabel(); syIn.setAttribute("aria-invalid","false");});
-
-  /* ---------- καρτέλα τμήματος ---------- */
-  var tbody=document.getElementById("tbody"), tcsv=document.getElementById("tcsv"), tmsg=document.getElementById("tmsg"), tstat=document.getElementById("tstat");
-  var updaters=[];
-  function refreshTeam(){
-    var c=ctx();
-    tstat.hidden=c.ok;
-    tstat.textContent=c.ok?"":"Επίλεξε ακριβώς 4 εργάσιμες ημέρες της εβδομάδας στις Ρυθμίσεις.";
-    updaters.forEach(function(u){u(c);});
-  }
-  function renderTeam(){
-    teamInit(); tbody.innerHTML=""; updaters=[];
-    state.team.forEach(function(r,i){
-      var tr=document.createElement("tr");
-      var a=document.createElement("td"); a.textContent=i+1; tr.appendChild(a);
-
-      // Ονοματεπώνυμο
-      var tn=document.createElement("td"), ni=document.createElement("input");
-      ni.type="text"; ni.className="c-name"; ni.value=r.name||""; ni.setAttribute("aria-label","Ονοματεπώνυμο "+(i+1));
-      ni.addEventListener("input",function(){r.name=ni.value; save();});
-      tn.appendChild(ni); tr.appendChild(tn);
-
-      // έναρξη
-      var ts=document.createElement("td"), si=document.createElement("input");
-      si.className="c-date"; si.setAttribute("aria-label","Έναρξη "+(i+1));
-      var s0=parseISO(r.start); si.value=s0===null?"":dmy(s0); if(s0!==null) flagSY(si,s0);
-      var setStart=function(v){ r.start=v===null?"":iso(v); save(); upd(ctx()); flagSY(si,v); };
-      maskInput(si,setStart);
-      ts.appendChild(withPicker(si,setStart)); tr.appendChild(ts);
-
-      // απουσίες
-      var ta=document.createElement("td"), ai=document.createElement("input");
-      ai.type="number"; ai.min="0"; ai.max="5"; ai.step="1"; ai.className="c-abs";
-      ai.setAttribute("aria-label","Απουσίες "+(i+1)); ai.value=String(absOf(r));
-      ai.addEventListener("input",function(){
-        var v=parseInt(ai.value,10), okv=(v>=0&&v<=5);
-        r.abs=okv?v:0;
-        ai.setAttribute("aria-invalid",(ai.value!==""&&!okv)?"true":"false");
-        save(); upd(ctx());
-      });
-      ai.addEventListener("blur",function(){ai.value=String(absOf(r)); ai.setAttribute("aria-invalid","false");});
-      ta.appendChild(ai); tr.appendChild(ta);
-
-      // λήξη
-      var rc=document.createElement("td"); rc.className="rs";
-      var rd=document.createElement("div"); rd.className="rd";
-      var rw=document.createElement("div"); rw.className="rw";
-      rc.appendChild(rd); rc.appendChild(rw); tr.appendChild(rc);
-
-      // κουμπιά
-      var bc=document.createElement("td"); bc.className="bc";
-      var b1=document.createElement("button"); b1.type="button"; b1.className="sec sm"; b1.textContent="Ημερολόγιο";
-      b1.setAttribute("aria-label","Ημερολόγιο του ατόμου "+(i+1));
-      b1.addEventListener("click",function(){openCalendar(i);});
-      var b2=document.createElement("button"); b2.type="button"; b2.className="sec sm"; b2.textContent="Ημέρες/Μήνα";
-      b2.setAttribute("aria-label","Πίνακας μηνών του ατόμου "+(i+1));
-      b2.addEventListener("click",function(){openMonths(i);});
-      bc.appendChild(b1); bc.appendChild(b2); tr.appendChild(bc);
-
-      // ανενεργή γραμμή
-      var tx=document.createElement("td"); tx.className="xc";
-      var xi=document.createElement("input"); xi.type="checkbox"; xi.checked=!!r.off;
-      xi.setAttribute("aria-label","Ανενεργή γραμμή "+(i+1)); xi.title="Ανενεργή γραμμή";
-      xi.addEventListener("change",function(){ r.off=xi.checked; save(); applyOff(); });
-      tx.appendChild(xi); tr.appendChild(tx);
-      function applyOff(){
-        var o=!!r.off;
-        tr.classList.toggle("inactive",o);
-        ni.disabled=o; si.disabled=o; ai.disabled=o;
-        var pi=tr.querySelector(".pk input"); if(pi) pi.disabled=o;
-        upd(ctx());
-      }
-
-      function upd(c){
-        var s=parseISO(r.start), has=(s!==null && c.ok);
-        b1.disabled=!has||!!r.off; b2.disabled=!has||!!r.off;
-        if(s===null){rd.textContent="—"; rw.textContent=""; rc.title=""; return;}
-        if(!c.ok){rd.textContent="Έλεγξε τις ρυθμίσεις"; rw.textContent=""; rc.title=""; return;}
-        var ab=absOf(r), e=endFor(s,c.n+ab,c.work,c.cm);
-        rd.textContent=dmy(e.end);
-        rw.textContent=WDF[new Date(e.end).getUTCDay()];
-        rc.title=(e.skipped.length?"Αργίες που παραλείφθηκαν:\n"+e.skipped.map(function(x){return fmtW(x.ms)+" – "+x.name;}).join("\n"):"Καμία αργία")+(ab?"\nΜε "+ab+" απουσίες: μέτρηση για "+(c.n+ab)+" εργάσιμες":"");
-      }
-      updaters.push(upd);
-      applyOff();
-      tbody.appendChild(tr);
-    });
-    refreshTeam();
-  }
-
-  function sortTeam(announce){
-    var by=state.sort, dir=(state.dir==="desc"?-1:1), c=ctx();
-    function key(r){
-      if(by==="name"){var nm=(r.name||"").trim(); return nm?nm.toLocaleLowerCase("el"):null;}
-      var s=parseISO(r.start); if(s===null) return null;
-      if(by==="start") return s;
-      if(!c.ok) return null;
-      return endFor(s,c.n+absOf(r),c.work,c.cm).end;
-    }
-    var keyed=state.team.map(function(r,i){return {r:r,k:key(r),i:i};});
-    keyed.sort(function(a,b){
-      if(a.k===null && b.k===null) return a.i-b.i;
-      if(a.k===null) return 1;
-      if(b.k===null) return -1;
-      var cmp=(typeof a.k==="string")?a.k.localeCompare(b.k,"el"):(a.k-b.k);
-      return cmp!==0?cmp*dir:a.i-b.i;
-    });
-    state.team=keyed.map(function(x){return x.r;}); save(); renderTeam(); updateSortUI();
-    if(announce) tmsg.textContent="Ο πίνακας ταξινομήθηκε κατά "+({name:"Ονοματεπώνυμο",start:"ημερομηνία έναρξης",end:"ημερομηνία λήξης"}[by])+". Όσα άτομα δεν έχουν την τιμή πάνω στον οποίο γίνεται η ταξινόμηση μένουν στο τέλος.";
-  }
-  function updateSortUI(){
-    [].slice.call(document.querySelectorAll(".sorth")).forEach(function(b){
-      var on=(b.dataset.sort===state.sort), ar=b.querySelector(".arr");
-      ar.textContent=on?(state.dir==="desc"?"▼":"▲"):"⇅"; ar.className="arr"+(on?"":" off");
-      b.parentNode.setAttribute("aria-sort",on?(state.dir==="desc"?"descending":"ascending"):"none");
-    });
-  }
-  [].slice.call(document.querySelectorAll(".sorth")).forEach(function(b){
-    b.addEventListener("click",function(){
-      if(state.sort===b.dataset.sort) state.dir=(state.dir==="desc"?"asc":"desc");
-      else { state.sort=b.dataset.sort; state.dir="asc"; }
-      save(); sortTeam(true);
-    });
-  });
-
-  /* ---------- πίνακας μηνών ---------- */
-  var dlg=document.getElementById("mdlg");
-  document.getElementById("mclose").addEventListener("click",function(){ if(dlg.close) dlg.close(); else dlg.removeAttribute("open"); });
-  function mkey(ms){var d=new Date(ms); return d.getUTCFullYear()*12+d.getUTCMonth();}
-  function openMonths(i){
-    var r=state.team[i], c=ctx(), s=parseISO(r.start);
-    if(s===null||!c.ok) return;
-    var ab=absOf(r), e=endFor(s,c.n+ab,c.work,c.cm);
-    var cnt={}, hol={}, k;
-    for(k in e.idx){ var kk=mkey(+k); cnt[kk]=(cnt[kk]||0)+1; }
-    e.skipped.forEach(function(x){ var kh=mkey(x.ms); hol[kh]=(hol[kh]||0)+1; });
-    var first=Math.min(state.sy*12+8,mkey(s)), last=Math.max((state.sy+1)*12+7,mkey(e.end));
-    document.getElementById("mttl").textContent="Εργάσιμες ανά μήνα – "+(r.name||"Άτομο "+(i+1));
-    var body=document.getElementById("mbody"); body.innerHTML="";
-    var info=document.createElement("p"); info.className="hint"; info.style.margin="0";
-    info.textContent="Έναρξη: "+fmtW(s)+" · Λήξη: "+fmtW(e.end)+". Πάτα σε έναν αριθμό της στήλης «Εργάσιμες» για να δεις τον μήνα στο ημερολόγιο.";
-    body.appendChild(info);
-    var tb=document.createElement("table"); tb.className="mt";
-    var th=document.createElement("thead");
-    th.innerHTML="<tr><th>Μήνας</th><th>Εργάσιμες</th><th>Αργίες</th><th>Σωρευτικά</th></tr>";
-    tb.appendChild(th);
-    var bd=document.createElement("tbody"), cum=0, th2=0;
-    for(var m=first;m<=last;m++){
-      var y=Math.floor(m/12), mo=m%12, n=cnt[m]||0, h=hol[m]||0;
-      cum+=n; th2+=h;
-      var tr=document.createElement("tr");
-      var label=new Intl.DateTimeFormat("el-GR",{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(y,mo,1)));
-      var vals=[label,n||"—",h||"—",cum||"—"];
-      vals.forEach(function(v,ci){
-        var td=document.createElement("td");
-        if(ci===1 && n){
-          var bt=document.createElement("button"); bt.type="button"; bt.className="cellbtn"; bt.textContent=v;
-          bt.dataset.mk=String(m); bt.title="Προβολή στο ημερολόγιο";
-          bt.addEventListener("click",function(){
-            if(dlg.close) dlg.close(); else dlg.removeAttribute("open");
-            openCalendar(i,+bt.dataset.mk,true);
-          });
-          td.appendChild(bt);
-        } else td.textContent=v;
-        tr.appendChild(td);
-      });
-      bd.appendChild(tr);
-    }
-    tb.appendChild(bd);
-    var tf=document.createElement("tfoot"), trf=document.createElement("tr");
-    ["Σύνολο",cum,th2||"—",""].forEach(function(v){var t=document.createElement("th"); t.textContent=v; trf.appendChild(t);});
-    tf.appendChild(trf); tb.appendChild(tf);
-    body.appendChild(tb);
-    var note=document.createElement("p"); note.className="hint"; note.style.margin="12px 0 0";
-    note.textContent=(ab?"Σύνολο = "+c.n+" εργάσιμες + "+ab+(ab===1?" απουσία. ":" απουσίες. "):"Σύνολο = "+c.n+" εργάσιμες. ")+"Ο τελευταίος μήνας δείχνει μόνο το υπόλοιπο που χρειάζεται για τη συμπλήρωση.";
-    body.appendChild(note);
-    if(dlg.showModal) dlg.showModal(); else dlg.setAttribute("open","");
-  }
-
-  /* ---------- CSV ---------- */
-  function q(v){return '"'+String(v).replace(/"/g,'""')+'"';}
-  function parseLine(l){
-    var out=[],cur="",inq=false;
-    for(var i=0;i<l.length;i++){
-      var ch=l.charAt(i);
-      if(inq){ if(ch==='"'){ if(l.charAt(i+1)==='"'){cur+='"';i++;} else inq=false; } else cur+=ch; }
-      else if(ch==='"') inq=true;
-      else if(ch===";"){out.push(cur);cur="";}
-      else cur+=ch;
-    }
-    out.push(cur); return out;
-  }
-  document.getElementById("tcsvb").addEventListener("click",function(){
-    var c=ctx();
-    var rows=[["Α/Α","Ονοματεπώνυμο","Έναρξη","Απουσίες","Η "+c.n+"η εργάσιμη"].map(q).join(";")];
-    state.team.forEach(function(r,i){
-      if(!r.name && !r.start) return;
-      var s=parseISO(r.start), e=(s!==null && c.ok)?endFor(s,c.n+absOf(r),c.work,c.cm):null;
-      rows.push([i+1,r.name,s===null?"":dmy(s),absOf(r),e?dmy(e.end):""].map(q).join(";"));
-    });
-    tcsv.value=rows.join("\n"); tcsv.select();
-    tmsg.textContent="Το CSV είναι έτοιμο στο πλαίσιο. Αντίγραψέ το με Ctrl+C και κάν’ το επικόλληση σε Excel ή σε αρχείο κειμένου.";
-    try{ navigator.clipboard.writeText(tcsv.value).then(function(){tmsg.textContent="Το CSV αντιγράφηκε στο πρόχειρο και φαίνεται και στο πλαίσιο.";},function(){}); }catch(e){}
-  });
-  document.getElementById("tload").addEventListener("click",function(){
-    var got=[];
-    function ab(v){return /^\s*[0-5]\s*$/.test(v||"")?+v:0;}
-    tcsv.value.split(/\r?\n/).forEach(function(l){
-      if(!l.trim() || got.length>=TEAM) return;
-      var c=parseLine(l), a=c.length>=4?parseAny(c[2]):null;
-      if(a!==null) got.push({name:c[1],start:iso(a),abs:c.length>=6?ab(c[4]):ab(c[3])});
-      else { var b=c.length>=2?parseAny(c[1]):null; if(b!==null) got.push({name:c[0],start:iso(b),abs:ab(c[2])}); }
-    });
-    if(!got.length){tmsg.textContent="Δεν βρέθηκαν έγκυρες γραμμές. Κάθε γραμμή χρειάζεται Ονοματεπώνυμο και ημερομηνία έναρξης στη μορφή ηη/μμ/εεεε."; return;}
-    state.team=got; save(); sortTeam(false);
-    tmsg.textContent="Φορτώθηκαν "+got.length+" άτομα.";
-  });
-  var clr=document.getElementById("tclear"), clrT;
-  clr.addEventListener("click",function(){
-    if(clr.dataset.arm!=="1"){
-      clr.dataset.arm="1"; clr.textContent="Πάτα ξανά για επιβεβαίωση";
-      clrT=setTimeout(function(){clr.dataset.arm="0"; clr.textContent="Καθαρισμός όλων";},4000);
-      return;
-    }
-    clearTimeout(clrT); clr.dataset.arm="0"; clr.textContent="Καθαρισμός όλων";
-    state.team=[]; save(); renderTeam();
-  });
-
-  /* ---------- ημερολόγιο ---------- */
-  var calPerson=document.createElement("select");
-  var focusKey=null, focusEl=null;
-  var cdlg=document.getElementById("cdlg");
-  document.getElementById("cclose").addEventListener("click",function(){ if(cdlg.close) cdlg.close(); else cdlg.removeAttribute("open"); });
-  var backTo=null;
-  cdlg.addEventListener("close",function(){
-    if(backTo!==null){ var bi=backTo; backTo=null; openMonths(bi); }
-  });
-  function openCalendar(i,mk,back){
-    backTo=back?i:null; pendingCal=i; focusKey=(mk===undefined?null:mk); focusEl=null; prepCalendar();
-    var r=state.team[i];
-    document.getElementById("calttl").textContent="Ημερολόγιο – "+(r.name||"Άτομο "+(i+1));
-    if(cdlg.showModal) cdlg.showModal(); else cdlg.setAttribute("open","");
-    if(focusEl){ try{focusEl.scrollIntoView({block:"center"});}catch(e){} }
-  }
-  function prepCalendar(){
-    var prev=calPerson.value; calPerson.innerHTML="";
-    var o0=document.createElement("option"); o0.value="-1"; o0.textContent="Χωρίς επισήμανση"; calPerson.appendChild(o0);
-    var first=-1;
-    state.team.forEach(function(r,i){
-      var ms=parseISO(r.start); if(ms===null) return;
-      if(first<0) first=i;
-      var o=document.createElement("option"); o.value=String(i); o.textContent=(r.name||"Άτομο "+(i+1))+" – "+dmy(ms); calPerson.appendChild(o);
-    });
-    var want=pendingCal!==null?String(pendingCal):prev;
-    pendingCal=null;
-    calPerson.value=(want && calPerson.querySelector('option[value="'+want+'"]'))?want:String(first);
-    renderCalendar();
-  }
-  function renderCalendar(){
-    var out=document.getElementById("months"), info=document.getElementById("calinfo");
-    out.innerHTML="";
-    var Y=state.sy;
-    var c=ctx(), cm=customMap(), pi=+calPerson.value, r=null, sMs=null;
-    if(pi>=0 && c.ok){ sMs=parseISO(state.team[pi].start); if(sMs!==null) r=endFor(sMs,c.n+absOf(state.team[pi]),c.work,cm); }
-    info.textContent="Σχολικό έτος "+syLabel()+". "+(!c.ok
-      ? "Επίλεξε ακριβώς 4 εργάσιμες ημέρες στις Ρυθμίσεις."
-      : (r ? "Έναρξη: "+fmtW(sMs)+". Η "+c.n+"η εργάσιμη: "+fmtW(r.end)+"."
-           : "Διάλεξε άτομο με ημερομηνία έναρξης για να δεις την αρίθμηση των εργάσιμων."));
-    var keys=[]; for(var kq0=Y*12+8;kq0<=(Y+1)*12+7;kq0++) keys.push(kq0);
-    if(focusKey!==null && keys.indexOf(focusKey)<0){ keys.push(focusKey); keys.sort(function(a,b){return a-b;}); }
-    keys.forEach(function(kq){
-      var m=kq%12, y=Math.floor(kq/12);
-      var wrap=document.createElement("div");
-      var h=document.createElement("div"); h.className="mh";
-      h.textContent=new Intl.DateTimeFormat("el-GR",{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(y,m,1)));
-      wrap.appendChild(h);
-      var g=document.createElement("div"); g.className="cg";
-      ["Δ","Τ","Τ","Π","Π","Σ","Κ"].forEach(function(l){var e=document.createElement("div"); e.className="wh"; e.textContent=l; g.appendChild(e);});
-      var off=(new Date(Date.UTC(y,m,1)).getUTCDay()+6)%7;
-      for(var k=0;k<off;k++) g.appendChild(document.createElement("div"));
-      var dim=new Date(Date.UTC(y,m+1,0)).getUTCDate(), ym=yearMap(y);
-      for(var day=1;day<=dim;day++){
-        var ms=Date.UTC(y,m,day), dw=new Date(ms).getUTCDay();
-        var cell=document.createElement("div"), cls="c", name=cm[ms]||ym[ms]||null;
-        var num=document.createElement("span"); num.textContent=day; cell.appendChild(num);
-        if(dw===0) cls+=" sun"; else if(!c.work[dw]) cls+=" off";
-        if(name){cls+=" hol"; cell.title=name;}
-        if(r){
-          if(r.idx[ms]){cls+=" cnt"; var cn=document.createElement("span"); cn.className="cn"; cn.textContent=r.idx[ms]; cell.appendChild(cn);}
-          if(ms===sMs) cls+=" st";
-          if(ms===r.end) cls+=" en";
-        }
-        cell.className=cls; g.appendChild(cell);
-      }
-      if(kq===focusKey){wrap.style.outline="3px solid var(--c2)"; wrap.style.outlineOffset="2px"; focusEl=wrap;}
-      wrap.appendChild(g); out.appendChild(wrap);
-    });
-  }
-
-  /* ---------- ρυθμίσεις: αργίες ---------- */
-  var offBox=document.getElementById("official");
-  function renderOfficial(){
-    var y=state.sy+1;
-    offBox.innerHTML="";
-    [["f","Σταθερές αργίες"],["e","Κινητές αργίες (Πάσχα "+dmy(easter(y))+")"]].forEach(function(gr){
-      var hd=document.createElement("div"); hd.className="group-h"; hd.textContent=gr[1]; offBox.appendChild(hd);
-      HOL.filter(function(x){return x.g===gr[0];}).forEach(function(x){
-        var row=document.createElement("label"); row.className="hol";
-        var c=document.createElement("input"); c.type="checkbox"; c.checked=state.off.indexOf(x.k)<0;
-        c.addEventListener("change",function(){
-          var i=state.off.indexOf(x.k);
-          if(c.checked){ if(i>=0) state.off.splice(i,1); } else if(i<0){ state.off.push(x.k); }
-          resetCache(); save();
-        });
-        var nm=document.createElement("span"); nm.className="nm"; nm.textContent=x.n;
-        var dt=document.createElement("span"); dt.className="dt";
-        dt.textContent=fmtW(x.k==="f-5-1"?mayShift(y,othersMap(y)):holMs(x,(x.g==="f"&&x.m>=9)?state.sy:y));
-        row.appendChild(c); row.appendChild(nm); row.appendChild(dt); offBox.appendChild(row);
-      });
-    });
-  }
-  document.getElementById("all").addEventListener("click",function(){state.off=[]; resetCache(); save(); renderOfficial();});
-  document.getElementById("none").addEventListener("click",function(){state.off=HOL.map(function(h){return h.k;}); resetCache(); save(); renderOfficial();});
-  document.getElementById("reset").addEventListener("click",function(){state.off=DEFAULT_OFF.slice(); resetCache(); save(); renderOfficial();});
-
-  var cBox=document.getElementById("custom"), cMs=null, cIn=document.getElementById("cdate");
-  maskInput(cIn,function(v){cMs=v;});
-  (function(){var par=cIn.parentNode; par.appendChild(withPicker(cIn,function(ms){cMs=ms;}));})();
-  function renderCustom(){
-    cBox.innerHTML="";
-    if(!state.custom.length){var e=document.createElement("p"); e.className="hint"; e.textContent="Δεν έχεις προσθέσει δικές σου αργίες."; cBox.appendChild(e); return;}
-    state.custom.slice().sort(function(a,b){return a.date<b.date?-1:1;}).forEach(function(c){
-      var ms=parseISO(c.date); if(ms===null) return;
-      var row=document.createElement("div"); row.className="hol";
-      var nm=document.createElement("span"); nm.className="nm"; nm.textContent=c.name||"Δική σου αργία";
-      var dt=document.createElement("span"); dt.className="dt"; dt.textContent=fmtW(ms);
-      var b=document.createElement("button"); b.className="link"; b.type="button"; b.textContent="Διαγραφή";
-      b.addEventListener("click",function(){
-        state.custom=state.custom.filter(function(x){return !(x.date===c.date && x.name===c.name);}); save(); renderCustom(); refreshTeam();
-      });
-      row.appendChild(nm); row.appendChild(dt); row.appendChild(b); cBox.appendChild(row);
-    });
-  }
-  var cmsg=document.getElementById("cmsg");
-  document.getElementById("cadd").addEventListener("click",function(){
-    if(cMs===null){cIn.setAttribute("aria-invalid","true"); cmsg.textContent="Γράψε έγκυρη ημερομηνία στη μορφή ηη/μμ/εεεε ή επίλεξέ την από το ημερολόγιο."; return;}
-    var dv=iso(cMs), ds=dmy(cMs), nv=document.getElementById("cname").value.trim();
-    if(state.custom.some(function(x){return x.date===dv && x.name===nv;})){cmsg.textContent="Η αργία υπάρχει ήδη."; return;}
-    state.custom.push({date:dv,name:nv});
-    cIn.value=""; cIn.dispatchEvent(new Event("input"));
-    document.getElementById("cname").value=""; save(); renderCustom(); refreshTeam();
-    cmsg.textContent="Η αργία "+ds+(nv?" ("+nv+")":"")+" προστέθηκε και υπολογίζεται στις εργάσιμες.";
-  });
-
-  updateSYText(); renderOfficial(); renderCustom(); syncDays(); sortTeam(false);
-
-  /* ---------- Εξαγωγή σε Excel (100% Offline XML) ---------- */
-  document.getElementById("texcel").addEventListener("click", function() {
-    function escXml(v) {
-      return String(v == null ? "" : v)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    function buildRows(rows) {
-      return rows.map(function(row, rIdx) {
-        var cells = row.map(function(val) {
-          var isNum = (typeof val === "number" && !isNaN(val));
-          var type = isNum ? "Number" : "String";
-          var style = rIdx === 0 ? ' ss:StyleID="hdr"' : "";
-          return '<Cell' + style + '><Data ss:Type="' + type + '">' + escXml(val) + '</Data></Cell>';
-        }).join("");
-        return "<Row>" + cells + "</Row>";
-      }).join("\n");
-    }
-
-    var c = ctx();
-    var cm = customMap();
-
-    // Φύλλο 1: Τμήμα
-    var sheet1Data = [["Ονοματεπώνυμο", "Έναρξη", "Απουσίες", "Ημερομηνία Λήξης", "Ημέρα Λήξης"]];
-    state.team.forEach(function(r) {
-      if (!r.name && !r.start) return;
-      var s = parseISO(r.start);
-      var e = (s !== null && c.ok) ? endFor(s, c.n + absOf(r), c.work, cm) : null;
-      var endDateStr = e ? dmy(e.end) : "";
-      var endDayStr = e ? WDF[new Date(e.end).getUTCDay()] : "";
-      sheet1Data.push([
-        r.name || "",
-        s === null ? "" : dmy(s),
-        absOf(r),
-        endDateStr,
-        endDayStr
-      ]);
-    });
-
-    // Φύλλο 2: Αργίες
-    var sheet2Data = [["Ημερομηνία", "Ημέρα", "Περιγραφή", "Κατηγορία"]];
-    var y = state.sy + 1;
-    var allHols = [];
-
-    HOL.forEach(function(x) {
-      if (state.off.indexOf(x.k) >= 0) return;
-      var ms = x.k === "f-5-1" ? mayShift(y, othersMap(y)) : holMs(x, (x.g === "f" && x.m >= 9) ? state.sy : y);
-      allHols.push({
-        ms: ms,
-        desc: x.n,
-        cat: x.g === "f" ? "Επίσημη (Σταθερή)" : "Επίσημη (Κινητή)"
-      });
-    });
-
-    state.custom.forEach(function(item) {
-      var ms = parseAny(item.d || item.date);
-      if (ms !== null) {
-        allHols.push({
-          ms: ms,
-          desc: item.n || item.name || "Τοπική / Προσωπική αργία",
-          cat: "Δική σου αργία"
-        });
-      }
-    });
-
-    allHols.sort(function(a, b) { return a.ms - b.ms; });
-    allHols.forEach(function(h) {
-      sheet2Data.push([
-        dmy(h.ms),
-        WDF[new Date(h.ms).getUTCDay()],
-        h.desc,
-        h.cat
-      ]);
-    });
-
-    var xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-      '<?mso-application progid="Excel.Sheet"?>\n' +
-      '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"\n' +
-      ' xmlns:o="urn:schemas-microsoft-com:office:office"\n' +
-      ' xmlns:x="urn:schemas-microsoft-com:office:excel"\n' +
-      ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">\n' +
-      ' <Styles>\n' +
-      '  <Style ss:ID="hdr"><Font ss:Bold="1"/><Interior ss:Color="#E1EBE8" ss:Pattern="Solid"/></Style>\n' +
-      ' </Styles>\n' +
-      ' <Worksheet ss:Name="Τμήμα">\n' +
-      '  <Table>\n' +
-      '   <Column ss:Width="180"/><Column ss:Width="95"/><Column ss:Width="75"/><Column ss:Width="115"/><Column ss:Width="105"/>\n' +
-      buildRows(sheet1Data) + '\n' +
-      '  </Table>\n' +
-      ' </Worksheet>\n' +
-      ' <Worksheet ss:Name="Αργίες">\n' +
-      '  <Table>\n' +
-      '   <Column ss:Width="95"/><Column ss:Width="95"/><Column ss:Width="280"/><Column ss:Width="140"/>\n' +
-      buildRows(sheet2Data) + '\n' +
-      '  </Table>\n' +
-      ' </Worksheet>\n' +
-      '</Workbook>';
-
-    var blob = new Blob([xml], { type: "application/vnd.ms-excel;charset=utf-8;" });
-    var a = document.createElement("a");
-    var outName = "Mathiteia_" + syLabel().replace("–", "-") + ".xls";
-    a.href = URL.createObjectURL(blob);
-    a.download = outName;
-    a.click();
-    tmsg.textContent = "Το αρχείο Excel (" + outName + ") δημιουργήθηκε με 2 φύλλα (Τμήμα & Αργίες).";
-  });
-})();
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('[role="tab"]');
-  const panels = document.querySelectorAll('[role="tabpanel"]');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.setAttribute('aria-selected', 'false'));
-      panels.forEach(p => p.hidden = true);
-      tab.setAttribute('aria-selected', 'true');
-      const target = document.getElementById(tab.getAttribute('aria-controls'));
-      if (target) target.hidden = false;
-    });
-  });
-});
-</script>
-
-<script>
-(function(){
-  const lpStartInput = document.getElementById('lpStartDate');
-  const lpDayName = document.getElementById('lpDayName');
-  const lpSchedTable = document.getElementById('lpScheduleTable');
-  const lpTableBody = document.getElementById('lpTableBody');
-  const lpHolTable = document.getElementById('lpHolidaysTable');
-  const lpHolBody = document.getElementById('lpHolidaysTableBody');
-  const lpHolHint = document.getElementById('lpHolidayHint');
-  const lpSummaryBar = document.getElementById('lpSummaryBar');
-
-  const greekDays = ['Κυριακή', 'Δευτέρα', 'Τρίτη', 'Τετάρτη', 'Πέμπτη', 'Παρασκευή', 'Σάββατο'];
-  const greekMonths = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
-  const MAX_LESSONS = 29;
-  const LP_STORAGE_KEY = 'mathiteia-lessons-v1';
-
-  let lpCustomHolidays = [];
-  let lpManualChecks = {};
-  let lpHolidayMap = new Map();
-
-  // Φόρτωση αποθηκευμένων δεδομένων
-  try {
-    const saved = JSON.parse(localStorage.getItem(LP_STORAGE_KEY) || 'null');
-    if (saved) {
-      if (saved.startDate) lpStartInput.value = saved.startDate;
-      if (Array.isArray(saved.customHolidays)) lpCustomHolidays = saved.customHolidays;
-      if (saved.manualChecks && typeof saved.manualChecks === 'object') lpManualChecks = saved.manualChecks;
-    }
-  } catch(e) {}
-
-  function saveLpState() {
-    try {
-      localStorage.setItem(LP_STORAGE_KEY, JSON.stringify({
-        startDate: lpStartInput.value,
-        customHolidays: lpCustomHolidays,
-        manualChecks: lpManualChecks
-      }));
-    } catch(e) {}
-  }
-
-  document.querySelectorAll('.subtab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.subtab-pane').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById(btn.dataset.lpSub).classList.add('active');
-    });
-  });
-
-  function toISO(date) {
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-  }
-  function fmtGR(isoStr) {
-    const [y, m, d] = isoStr.split('-');
-    return `${d}/${m}/${y}`;
-  }
-  function getEaster(year) {
-    const a = year % 4, b = year % 7, c = year % 19;
-    const d = (19 * c + 15) % 30;
-    const e = (2 * a + 4 * b - d + 34) % 7;
-    const month = Math.floor((d + e + 114) / 31);
-    const day = ((d + e + 114) % 31) + 1;
-    return new Date(year, month - 1, day + 13);
-  }
-  function getOfficialHolidays(year) {
-    const list = [
-      { date: `${year}-01-30`, title: 'Τριών Ιεραρχών (Εκπαιδευτική)' },
-      { date: `${year}-03-25`, title: 'Ευαγγελισμός / Εθνική Επέτειος' },
-      { date: `${year}-05-01`, title: 'Εργατική Πρωτομαγιά' },
-      { date: `${year}-08-15`, title: 'Κοίμηση της Θεοτόκου' },
-      { date: `${year}-10-28`, title: 'Επέτειος του «Όχι»' },
-      { date: `${year}-11-17`, title: 'Επέτειος Πολυτεχνείου (Εκπαιδευτική)' }
-    ];
-    for (let d = 1; d <= 7; d++) {
-      const iso = `${year}-01-${String(d).padStart(2, '0')}`;
-      let title = 'Διακοπές Χριστουγέννων';
-      if (d === 1) title = 'Πρωτοχρονιά (Διακοπές Χριστουγέννων)';
-      if (d === 6) title = 'Θεοφάνεια (Διακοπές Χριστουγέννων)';
-      list.push({ date: iso, title });
-    }
-    for (let d = 24; d <= 31; d++) {
-      const iso = `${year}-12-${String(d).padStart(2, '0')}`;
-      let title = 'Διακοπές Χριστουγέννων';
-      if (d === 25) title = 'Χριστούγεννα (Διακοπές Χριστουγέννων)';
-      if (d === 26) title = 'Σύναξη Θεοτόκου (Διακοπές Χριστουγέννων)';
-      list.push({ date: iso, title });
-    }
-    const easter = getEaster(year);
-    const addDays = (base, days) => { const dt = new Date(base); dt.setDate(dt.getDate() + days); return toISO(dt); };
-    list.push({ date: addDays(easter, -48), title: 'Καθαρά Δευτέρα' });
-    list.push({ date: addDays(easter, 50), title: 'Αγίου Πνεύματος' });
-    const eLabels = {
-      '-6': 'Μεγάλη Δευτέρα (Διακοπές Πάσχα)', '-5': 'Μεγάλη Τρίτη (Διακοπές Πάσχα)',
-      '-4': 'Μεγάλη Τετάρτη (Διακοπές Πάσχα)', '-3': 'Μεγάλη Πέμπτη (Διακοπές Πάσχα)',
-      '-2': 'Μεγάλη Παρασκευή (Διακοπές Πάσχα)', '-1': 'Μεγάλο Σάββατο (Διακοπές Πάσχα)',
-      '0': 'Κυριακή του Πάσχα (Διακοπές Πάσχα)', '1': 'Δευτέρα του Πάσχα (Διακοπές Πάσχα)'
-    };
-    for (let offset = -6; offset <= 5; offset++) {
-      list.push({ date: addDays(easter, offset), title: eLabels[String(offset)] || 'Διακοπές Πάσχα' });
-    }
-    return list;
-  }
-  document.getElementById('lpAddCustomBtn').addEventListener('click', () => {
-    const startVal = document.getElementById('lpCustomStart').value;
-    const endVal = document.getElementById('lpCustomEnd').value || startVal;
-    const titleVal = document.getElementById('lpCustomTitle').value.trim() || 'Προσωπική Αργία';
-    if (!startVal) { alert('Επιλέξτε ημερομηνία έναρξης αργίας.'); return; }
-    const [sy, sm, sd] = startVal.split('-').map(Number);
-    const [ey, em, ed] = endVal.split('-').map(Number);
-    let curr = new Date(sy, sm - 1, sd);
-    const end = new Date(ey, em - 1, ed);
-    if (end < curr) { alert('Η ημερομηνία «Έως» δεν μπορεί να είναι πριν από το «Από».'); return; }
-    while (curr <= end) {
-      const iso = toISO(curr);
-      const idx = lpCustomHolidays.findIndex(h => h.date === iso);
-      if (idx !== -1) lpCustomHolidays[idx].title = titleVal;
-      else lpCustomHolidays.push({ date: iso, title: titleVal });
-      delete lpManualChecks[iso];
-      curr.setDate(curr.getDate() + 1);
-    }
-    document.getElementById('lpCustomStart').value = '';
-    document.getElementById('lpCustomEnd').value = '';
-    document.getElementById('lpCustomTitle').value = '';
-    saveLpState();
-    generateLessons();
-  });
-
-  window.lpRemoveCustomHoliday = function(isoDate) {
-    lpCustomHolidays = lpCustomHolidays.filter(h => h.date !== isoDate);
-    delete lpManualChecks[isoDate];
-    saveLpState();
-    generateLessons();
-  };
-
-  function updateLessonStatuses() {
-    const rows = lpTableBody.querySelectorAll('tr.lesson-row');
-    let lessonCounter = 1, holidayCounter = 0;
-    const monthCounts = {};
-
-    rows.forEach(row => {
-      const chk = row.querySelector('.active-checkbox');
-      const numCell = row.querySelector('.lesson-number');
-      const stCell = row.querySelector('.status-cell');
-      const rsnCell = row.querySelector('.reason-cell');
-      const isoDate = row.dataset.isoDate;
-      const mKey = row.dataset.monthKey;
-      if (!monthCounts[mKey]) monthCounts[mKey] = 0;
-
-      const savedReason = row.dataset.holidayReason || lpHolidayMap.get(isoDate) || '';
-      if (savedReason) row.dataset.holidayReason = savedReason;
-
-      row.classList.remove('holiday-row', 'final-lesson-row');
-
-      if (lessonCounter > MAX_LESSONS) {
-        chk.checked = false; chk.disabled = true;
-        row.classList.add('holiday-row');
-        numCell.textContent = '-';
-        stCell.innerHTML = '<span class="lp-badge lp-badge-off">Ανενεργή</span>';
-        rsnCell.innerHTML = `<span class="lp-reason-off">Πέραν των 29 μαθημάτων${savedReason ? ' (' + savedReason + ')' : ''}</span>`;
-        holidayCounter++;
-        return;
-      }
-
-      chk.disabled = false;
-
-      if (chk.checked) {
-        if (lessonCounter === MAX_LESSONS) {
-          row.classList.add('final-lesson-row');
-          numCell.textContent = `${lessonCounter}ο Μάθημα`;
-          stCell.innerHTML = '<span class="lp-badge lp-badge-end">Μάθημα</span>';
-          rsnCell.innerHTML = `<span class="lp-reason-end">🏁 Λήξη Μαθημάτων - Αξιολόγηση${savedReason ? ' (' + savedReason + ')' : ''}</span>`;
-        } else {
-          numCell.textContent = `${lessonCounter}ο Μάθημα`;
-          stCell.innerHTML = '<span class="lp-badge lp-badge-ok">Μάθημα</span>';
-          rsnCell.innerHTML = savedReason ? `<span class="lp-reason-ok">${savedReason}</span>` : '';
-        }
-        lessonCounter++;
-        monthCounts[mKey]++;
-      } else {
-        row.classList.add('holiday-row');
-        numCell.textContent = '-';
-        stCell.innerHTML = '<span class="lp-badge lp-badge-off">Αργία</span>';
-        rsnCell.innerHTML = `<span class="lp-reason-off">${savedReason || 'Χειροκίνητη απενεργοποίηση'}</span>`;
-        holidayCounter++;
-      }
-    });
-
-    Object.keys(monthCounts).forEach(mKey => {
-      const badge = document.getElementById(`lp-month-count-${mKey}`);
-      if (badge) {
-        const cnt = monthCounts[mKey];
-        badge.textContent = cnt === 1 ? '1 μάθημα' : `${cnt} μαθήματα`;
-      }
-    });
-
-    document.getElementById('lpTotalLessons').textContent = lessonCounter - 1;
-    document.getElementById('lpTotalHolidays').textContent = holidayCounter;
-  }
-
-  function generateLessons() {
-    const val = lpStartInput.value;
-    saveLpState();
-    if (!val) {
-      lpDayName.textContent = 'Επιλέξτε ημερομηνία';
-      lpSchedTable.style.display = 'none';
-      lpSummaryBar.style.display = 'none';
-      lpHolTable.style.display = 'none';
-      lpHolHint.style.display = 'block';
-      return;
-    }
-
-    const [year, month, day] = val.split('-').map(Number);
-    const startDate = new Date(year, month - 1, day);
-    const endYear = (month > 6) ? year + 1 : year;
-    const endDate = new Date(endYear, 5, 30);
-    const dayName = greekDays[startDate.getDay()];
-    lpDayName.textContent = dayName;
-
-    let official = getOfficialHolidays(year);
-    if (endYear !== year) official = official.concat(getOfficialHolidays(endYear));
-
-    const startISO = toISO(startDate), endISO = toISO(endDate);
-    lpHolidayMap.clear();
-    const displayList = [];
-
-    official.forEach(h => {
-      if (h.date >= startISO && h.date <= endISO) {
-        lpHolidayMap.set(h.date, h.title);
-        displayList.push({ ...h, type: 'Επίσημη / Διακοπές' });
-      }
-    });
-    lpCustomHolidays.forEach(h => {
-      if (h.date >= startISO && h.date <= endISO) {
-        lpHolidayMap.set(h.date, h.title);
-        displayList.push({ ...h, type: 'Προσωπική' });
-      }
-    });
-    displayList.sort((a, b) => a.date.localeCompare(b.date));
-
-    lpHolBody.innerHTML = '';
-    displayList.forEach(h => {
-      const [hy, hm, hd] = h.date.split('-').map(Number);
-      const hDay = greekDays[new Date(hy, hm - 1, hd).getDay()];
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${fmtGR(h.date)}</td>
-        <td>${hDay}</td>
-        <td><strong>${h.title}</strong></td>
-        <td>${h.type}</td>
-        <td class="center">${h.type === 'Προσωπική' ? `<button type="button" class="link" onclick="lpRemoveCustomHoliday('${h.date}')">Διαγραφή</button>` : '<span class="hint" style="margin:0;">Αυτόματη</span>'}</td>
-      `;
-      lpHolBody.appendChild(tr);
-    });
-    lpHolHint.style.display = 'none';
-    lpHolTable.style.display = 'table';
-
-    lpTableBody.innerHTML = '';
-    let curr = new Date(startDate);
-    let lastMonthKey = '';
-
-    while (curr <= endDate) {
-      const iso = toISO(curr);
-      const cMonth = curr.getMonth();
-      const cYear = curr.getFullYear();
-      const mKey = `${cYear}-${cMonth}`;
-
-      if (mKey !== lastMonthKey) {
-        const mRow = document.createElement('tr');
-        mRow.className = 'month-header-row';
-        mRow.innerHTML = `<td colspan="6">🗓️ ${greekMonths[cMonth]} ${cYear}<span class="month-summary" id="lp-month-count-${mKey}">0 μαθήματα</span></td>`;
-        lpTableBody.appendChild(mRow);
-        lastMonthKey = mKey;
-      }
-
-      const isHol = lpHolidayMap.has(iso);
-      const isChecked = (iso in lpManualChecks) ? lpManualChecks[iso] : !isHol;
-      const row = document.createElement('tr');
-      row.className = 'lesson-row';
-      row.dataset.isoDate = iso;
-      row.dataset.monthKey = mKey;
-      if (isHol) row.dataset.holidayReason = lpHolidayMap.get(iso);
-
-      row.innerHTML = `
-        <td class="center"><input type="checkbox" class="active-checkbox" style="width:18px;height:18px;cursor:pointer;" ${isChecked ? 'checked' : ''}></td>
-        <td class="lesson-number"></td>
-        <td>${fmtGR(iso)}</td>
-        <td>${dayName}</td>
-        <td class="status-cell"></td>
-        <td class="reason-cell"></td>
-      `;
-      const chkBox = row.querySelector('.active-checkbox');
-      chkBox.addEventListener('change', () => {
-        lpManualChecks[iso] = chkBox.checked;
-        saveLpState();
-        updateLessonStatuses();
-      });
-      lpTableBody.appendChild(row);
-      curr.setDate(curr.getDate() + 7);
-    }
-
-    updateLessonStatuses();
-    lpSchedTable.style.display = 'table';
-    lpSummaryBar.style.display = 'flex';
-  }
-
-  lpStartInput.addEventListener('change', () => {
-    lpManualChecks = {};
-    generateLessons();
-  });
-
-  // Αρχική φόρτωση αν υπάρχει αποθηκευμένη ημερομηνία
-  if (lpStartInput.value) generateLessons();
-})();
-</script>
 </body>
 </html>
+
+
+
+
+
+
+
