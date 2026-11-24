@@ -1,0 +1,20 @@
+{
+  "name": "Μαθητεία – Εργάσιμες & Πρόγραμμα Μαθημάτων",
+  "short_name": "Μαθητεία",
+  "description": "Υπολογισμός 156 εργάσιμων ημερών και προγράμματος 29 μαθημάτων",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef2f1",
+  "theme_color": "#0f5c52",
+
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJz48cmVjdCB3aWR0aD0nNTEyJyBoZWlnaHQ9JzUxMicgcng9Jzk2JyBmaWxsPScjMGY1YzUyJy8+PHJlY3QgeD0nOTYnIHk9JzEyOCcgd2lkdGg9JzMyMCcgaGVpZ2h0PScyODgnIHJ4PSczNicgZmlsbD0nbm9uZScgc3Ryb2tlPScjZmZmZmZmJyBzdHJva2Utd2lkdGg9JzMyJy8+PHBhdGggZD0nTTk2IDIxNmgzMjBNMTc2IDg4djY0TTMzNiA4OHY2NCcgc3Ryb2tlPScjZmZmZmZmJyBzdHJva2Utd2lkdGg9JzMyJyBzdHJva2UtbGluZWNhcD0ncm91bmQnLz48dGV4dCB4PScyNTYnIHk9JzM0NScgZm9udC1mYW1pbHk9J0FyaWFsLHNhbnMtc2VyaWYnIGZvbnQtc2l6ZT0nMTE1JyBmb250LXdlaWdodD0nYm9sZCcgZmlsbD0nI2UzOWEyZCcgdGV4dC1hbmNob3I9J21pZGRsZSc+MTU2PC90ZXh0Pjwvc3ZnPg==",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+
+}

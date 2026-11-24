@@ -394,7 +394,8 @@
       var s=parseISO(r.start); if(s===null) return null;
       if(by==="start") return s;
       if(!c.ok) return null;
-      return endFor(s,c.n+absOf(r),c.work,c.cm).end;
+        return endFor(s,c.n+extraCountFor(r),c.work,c.cm,absMapFor(r)).end;
+
     }
     var keyed=state.team.map(function(r,i){return {r:r,k:key(r),i:i};});
     keyed.sort(function(a,b){
@@ -606,16 +607,8 @@
     renderCalendar();
   }
      function renderCalendar(){
-       // 1. Πάνω μέρος της renderCalendar:
-    if(pi>=0 && c.ok){
-      sMs=parseISO(state.team[pi].start);
-      am=absMapFor(state.team[pi]);
-      if(sMs!==null) r=endFor(sMs,c.n+extraCountFor(state.team[pi]),c.work,cm,am);
-    }
-
-
- var out=document.getElementById("months"), info=document.getElementById("calinfo");
-    out.innerHTML="";
+       var out=document.getElementById("months"), info=document.getElementById("calinfo");
+       out.innerHTML="";
         // Προσθήκη ένδειξης "Απουσία" στη γραμμή του υπομνήματος
     var legRow=cdlg.querySelector(".leg")||cdlg.querySelector("div:first-child > div:last-child");
     if(legRow && !legRow.querySelector(".leg-abs-item")){
@@ -672,10 +665,8 @@
   }
 
 
-
-
-
   var offBox=document.getElementById("official");
+
   function renderOfficial(){
     var y=state.sy+1;
     offBox.innerHTML="";
@@ -697,9 +688,9 @@
       });
     });
   }
-  document.getElementById("all").addEventListener("click",function(){state.off=[]; resetCache(); save(); renderOfficial();});
-  document.getElementById("none").addEventListener("click",function(){state.off=HOL.map(function(h){return h.k;}); resetCache(); save(); renderOfficial();});
-  document.getElementById("reset").addEventListener("click",function(){state.off=DEFAULT_OFF.slice(); resetCache(); save(); renderOfficial();});
+  document.getElementById("all").addEventListener("click",function(){state.off=[]; resetCache(); save(); refreshTeam(); renderOfficial();});
+  document.getElementById("none").addEventListener("click",function(){state.off=HOL.map(function(h){return h.k;}); resetCache(); save(); refreshTeam(); renderOfficial();});
+  document.getElementById("reset").addEventListener("click",function(){state.off=DEFAULT_OFF.slice(); resetCache(); save(); refreshTeam(); renderOfficial();});
 
   var cBox=document.getElementById("custom"), cMs=null, cIn=document.getElementById("cdate");
   maskInput(cIn,function(v){cMs=v;});
@@ -817,6 +808,101 @@
     a.href = URL.createObjectURL(blob); a.download = outName; a.click();
     tmsg.textContent = "Το αρχείο Excel (" + outName + ") δημιουργήθηκε με όλες τις απουσίες.";
   });
+
+  // --- Πλήρες Αντίγραφο Ασφαλείας (Backup & Επαναφορά) ---
+  (function setupFullBackup() {
+    var settingsPanel = document.getElementById("p-set");
+    if (!settingsPanel || document.getElementById("backupBox")) return;
+
+    var box = document.createElement("div");
+    box.id = "backupBox";
+    box.style.cssText = "margin-top:24px; padding-top:18px; border-top:1px solid var(--line);";
+    box.innerHTML =
+      '<h2>Αντίγραφο Ασφαλείας &amp; Μεταφορά Δεδομένων</h2>' +
+      '<p class="hint">Αποθήκευσε όλα τα δεδομένα (Τμήμα, απουσίες, ρυθμίσεις, αργίες και πρόγραμμα 29 μαθημάτων) σε ένα αρχείο, ώστε να τα μεταφέρεις σε άλλον υπολογιστή ή να τα επαναφέρεις ανά πάσα στιγμή.</p>' +
+      '<div class="tools">' +
+        '<button type="button" id="bkExportBtn" class="sec">💾 Λήψη Αντιγράφου (.json)</button>' +
+        '<button type="button" id="bkImportBtn" class="sec">📂 Επαναφορά από Αρχείο</button>' +
+        '<input type="file" id="bkFileInput" accept=".json,application/json" style="display:none;">' +
+      '</div>' +
+      '<p id="bkMsg" class="stat" style="margin-top:10px;" aria-live="polite"></p>';
+
+    settingsPanel.appendChild(box);
+
+    var bkMsg = document.getElementById("bkMsg");
+    var fileInp = document.getElementById("bkFileInput");
+
+    document.getElementById("bkExportBtn").addEventListener("click", function() {
+      var lessonsRaw = null;
+      try { lessonsRaw = JSON.parse(localStorage.getItem("mathiteia-lessons-v1") || "null"); } catch (e) {}
+
+      var payload = {
+        app: "Mathiteia-Backup",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        ergasimes: state,
+        lessons: lessonsRaw
+      };
+
+      var now = new Date();
+      var stamp = pad(now.getDate()) + "-" + pad(now.getMonth() + 1) + "-" + now.getFullYear();
+      var fileName = "Mathiteia_Backup_" + stamp + ".json";
+
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8;" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      a.click();
+
+      bkMsg.className = "stat";
+      bkMsg.textContent = "Το αντίγραφο ασφαλείας (" + fileName + ") αποθηκεύτηκε στον υπολογιστή σου.";
+    });
+
+    document.getElementById("bkImportBtn").addEventListener("click", function() {
+      fileInp.value = "";
+      fileInp.click();
+    });
+
+    fileInp.addEventListener("change", function() {
+      var file = fileInp.files && fileInp.files;
+      if (!file) return;
+
+      var reader = new FileReader();
+      reader.onload = function() {
+        try {
+          var data = JSON.parse(String(reader.result || ""));
+          if (!data || data.app !== "Mathiteia-Backup" || !data.ergasimes) {
+            bkMsg.className = "stat bad";
+            bkMsg.textContent = "Το αρχείο δεν είναι έγκυρο αντίγραφο ασφαλείας της εφαρμογής.";
+            return;
+          }
+
+          if (!confirm("Η επαναφορά θα αντικαταστήσει όλα τα τρέχοντα δεδομένα (Τμήμα, απουσίες, ρυθμίσεις και πρόγραμμα μαθημάτων). Θέλεις να συνεχίσεις;")) {
+            return;
+          }
+
+          localStorage.setItem(KEY, JSON.stringify(data.ergasimes));
+          if (data.lessons && typeof data.lessons === "object") {
+            localStorage.setItem("mathiteia-lessons-v1", JSON.stringify(data.lessons));
+          } else {
+            localStorage.removeItem("mathiteia-lessons-v1");
+          }
+
+          alert("Η επαναφορά ολοκληρώθηκε επιτυχώς! Η σελίδα θα ανανεωθεί.");
+          location.reload();
+        } catch (e) {
+          bkMsg.className = "stat bad";
+          bkMsg.textContent = "Σφάλμα κατά την ανάγνωση του αρχείου. Βεβαιώσου ότι επέλεξες σωστό αρχείο .json.";
+        }
+      };
+      reader.readAsText(file, "UTF-8");
+    });
+  })();
+
+
+
+
+
 })();
 
 

@@ -66,15 +66,18 @@ button.cellbtn{font:inherit; font-weight:700; background:var(--chip); color:var(
 
 
 .tbl{overflow-x:auto; margin-top:6px}
-.tbl table{width:100%; border-collapse:collapse; min-width:900px}
-.tbl th{text-align:left; font-size:.88rem; color:var(--muted); padding:6px 8px; white-space:nowrap}
-.tbl td{padding:3px 5px; border-top:1px solid var(--line); vertical-align:middle}
-.tbl td:first-child{color:var(--muted); width:44px; text-align:right; padding-right:10px}
-.tbl input{padding:7px 10px; font-size:.97rem}
-.tbl .c-name{min-width:230px}
-.tbl .c-date{min-width:130px; width:140px}
-.tbl .c-abs{min-width:80px; width:90px}
-.tbl .rs{padding:4px 12px; min-width:150px; line-height:1.25}
+
+.tbl table{width:100%; border-collapse:collapse; min-width:0}
+.tbl th{text-align:left; font-size:.88rem; color:var(--muted); padding:6px 6px; white-space:nowrap}
+.tbl td{padding:3px 4px; border-top:1px solid var(--line); vertical-align:middle}
+.tbl td:first-child{color:var(--muted); width:36px; text-align:right; padding-right:8px}
+.tbl input{padding:7px 8px; font-size:.95rem}
+.tbl .c-name{min-width:190px}
+.tbl .c-date{min-width:154px; width:154px}
+.tbl .c-date input{padding-left:8px; padding-right:32px!important}
+.tbl .c-abs{width:1%; white-space:nowrap}
+.tbl .rs{padding:4px 8px; min-width:105px; width:110px; line-height:1.2}
+
 .rd{font-weight:700; white-space:nowrap}
 .rw{font-size:.85rem; color:var(--c2); font-weight:600}
 .tbl .bc{white-space:nowrap}
@@ -125,7 +128,9 @@ table.mt tfoot th{color:var(--ink); font-size:1rem}
 .subtab-pane{display:none}
 .subtab-pane.active{display:block}
 .lp-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:14px 0}
-.lp-row input[type=date]{width:auto; min-width:170px}
+
+.lp-row .dp, .lp-row input[type=date]{width:170px; max-width:100%}
+
 .lp-day-badge{background:var(--soft); color:var(--accent); padding:9px 16px; border-radius:8px; font-weight:700; border:1px solid var(--line); min-width:130px; text-align:center}
 .lp-summary{margin:12px 0; padding:10px 14px; background:var(--soft); border:1px solid var(--line); border-radius:8px; font-weight:600; display:flex; gap:24px; flex-wrap:wrap}
 table.lptbl{width:100%; border-collapse:collapse; margin-top:12px; font-size:.95rem}
@@ -288,7 +293,7 @@ table.mt tfoot th { background:var(--warm); border-top:2px solid var(--warmline)
   border: 2px solid #6366f1 !important;
   font-weight: 700 !important;
 }
-,
+
 .leg-abs-item {
   display: inline-flex;
   align-items: center;
@@ -349,5 +354,40 @@ tr.inactive-row td {
   color: #3730a3;
   font-weight: 700;
   border: 1px solid #a5b4fc;
+}
+
+/* --- Καθαρή Εκτύπωση --- */
+@media print {
+  body { background: #ffffff !important; color: #000000 !important; font-size: 12pt; }
+  main { max-width: 100%; padding: 0; }
+  .tabs, .subtabs, .lp-row, .tools, .no-print, #lpShortageWarn, .credit, button { display: none !important; }
+  .panel { border: 0; padding: 0; box-shadow: none; }
+  table.lptbl th:first-child, table.lptbl td:first-child,
+  table.lptbl th:last-child, table.lptbl td:last-child { display: none !important; }
+  table.lptbl tr { break-inside: avoid; }
+}
+
+
+/* --- Διόρθωση Dark Mode & Τίτλου Εκτύπωσης --- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) table.lptbl tr.lesson-row { background: var(--surface); }
+  :root:not([data-theme="light"]) table.lptbl tr.lesson-row:nth-child(even) { background: var(--zebra); }
+  :root:not([data-theme="light"]) table.lptbl tr.holiday-row { background: rgba(255, 138, 141, 0.14) !important; color: var(--muted); }
+  :root:not([data-theme="light"]) table.lptbl tr.final-lesson-row { background: var(--warm) !important; color: var(--ink); border-color: var(--warmline); }
+  :root:not([data-theme="light"]) table.lptbl tr.month-header-row td { background: var(--chip); color: var(--accent); border-color: var(--line); }
+  :root:not([data-theme="light"]) .month-summary { background: var(--surface); color: var(--accent); border-color: var(--line); }
+  :root:not([data-theme="light"]) #cdlg > div:first-child { background-color: var(--surface) !important; border-color: var(--line); }
+}
+
+.lp-print-header { display: none; }
+@media print {
+  .lp-print-header {
+    display: block !important;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #0f5c52;
+  }
+  .lp-print-header h2 { margin: 0 0 4px; font-size: 15pt; color: #0f5c52; }
+  .lp-print-header p { margin: 0; font-size: 11pt; color: #333333; }
 }
 
